@@ -1,6 +1,7 @@
 ### Hi there 👋
 
 - 🌱 **WIP** [Knowledge Map of Content WIKI](https://github.com/mholson/mholson/wiki)
+- 🔭 I’m currently working on [IBTeX](https://github.com/mholson/IBTeX) and [Stockholm Nord Beamer Theme](https://github.com/mholson/sthlmNordBeamerTheme)
 
 <!--
 **mholson/mholson** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
