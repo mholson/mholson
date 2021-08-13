@@ -1,5 +1,7 @@
 ### Hi there 👋
 
+- 🌱 **WIP** [Knowledge Map of Content WIKI](https://github.com/mholson/mholson/wiki)
+
 <!--
 **mholson/mholson** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
