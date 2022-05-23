@@ -2,7 +2,8 @@
 
 
 - 🔭 I’m currently working on [IBTeX](https://github.com/mholson/IBTeX) and [Stockholm Nord Beamer Theme](https://github.com/mholson/sthlmNordBeamerTheme)
-
+- 📺 I've started a [YouTube Channel](https://www.youtube.com/channel/UCWJ_xEfR8wHQAlZ4OAgxGWw) where I post about TeX and Python
+- 🌱 My digital garden coming soon ...
 <!--
 **mholson/mholson** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
