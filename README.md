@@ -1,7 +1,7 @@
 ### Hi there 👋
 
 
-- 🔭 I’m currently working on [IBTeX](https://github.com/mholson/IBTeX) and [Stockholm Nord Beamer Theme](https://github.com/mholson/sthlmNordBeamerTheme)
+- 🔭 I’m currently working on [nordTeXnotes]([https://github.com/mholson/IBTeX](https://github.com/mholson/nordTeXnotes)) and [Stockholm Nord Beamer Theme](https://github.com/mholson/sthlmNordBeamerTheme)
 - 📺 I've started a [YouTube Channel](https://www.youtube.com/channel/UCWJ_xEfR8wHQAlZ4OAgxGWw) where I post about TeX and Python
 - 🌱 My digital garden coming soon ...
 <!--
