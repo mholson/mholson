@@ -23,6 +23,6 @@ Hej from Stockholm, Sweden! I’m Mark, a Mathematics educator with over 18 year
 - Crafting all resources from emacs and the terminal managed from the comfort of macOS.
 
 ## 🎬 **On YouTube:
-Dive into my [YouTube Channel](https://www.youtube.com/channel/UCWJ_xEfR8wHQAlZ4OAgxGWw) where I share content aligning with my teaching and tech interests, providing a window into my world of Mathematics, Programming, and Web
+Dive into my [YouTube Channel](https://www.youtube.com/channel/UCWJ_xEfR8wHQAlZ4OAgxGWw) where I share content aligning with my teaching and tech interests, providing a window into my world of mathematics, programming, and emacs.
 
 <!--⚡ **Fun Facts:**-->
