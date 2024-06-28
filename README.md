@@ -2,7 +2,7 @@
 
 ## (setq hello-world t) 👋🏼
 
-Hej from Stockholm, Sweden! I’m Mark, a Mathematics educator with over 18 years experience and has a deep passion for programming and web development. As a Lindewood University alumni, I bring a dynamic approach to learning, integrating Backward Lesson Design, Computational Thinking, and Threshold Concepts into my teaching practice.
+Hej from Stockholm, Sweden! I’m Mark, a Mathematics educator with over 18 years experience and has a deep passion for programming and web development. As a Lindenwood University alumni, I bring a dynamic approach to learning, integrating Backward Lesson Design, Computational Thinking, and Threshold Concepts into my teaching practice.
 
 ## 🔥 My Teaching Arsenal:
 - **Doom Emacs:** My preferred tool for programming and note-taking.
