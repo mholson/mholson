@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/default.xsl"?>
+<fr:tree xmlns:fr="http://www.forester-notes.org" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:xml="http://www.w3.org/XML/1998/namespace" root="false" base-url="/">
+  <fr:frontmatter>
+    <fr:authors>
+      <fr:author>
+        <fr:link href="/markholson/" title="Mark Olson" uri="https://www.mholson.com/markholson/" display-uri="markholson" type="local">Mark Olson</fr:link>
+      </fr:author>
+    </fr:authors>
+    <fr:date>
+      <fr:year>2025</fr:year>
+      <fr:month>10</fr:month>
+      <fr:day>4</fr:day>
+    </fr:date>
+    <fr:uri>https://www.mholson.com/2025-W40/</fr:uri>
+    <fr:display-uri>2025-W40</fr:display-uri>
+    <fr:route>/2025-W40/</fr:route>
+    <fr:title text="Weeknotes 2025-W40">Weeknotes 2025-W40</fr:title>
+  </fr:frontmatter>
+  <fr:mainmatter>
+    <html:p>Hello World!</html:p>
+    <fr:tree show-metadata="false">
+      <fr:frontmatter>
+        <fr:authors>
+          <fr:author>
+            <fr:link href="/markholson/" title="Mark Olson" uri="https://www.mholson.com/markholson/" display-uri="markholson" type="local">Mark Olson</fr:link>
+          </fr:author>
+        </fr:authors>
+        <fr:date>
+          <fr:year>2025</fr:year>
+          <fr:month>10</fr:month>
+          <fr:day>4</fr:day>
+        </fr:date>
+        <fr:uri>https://www.mholson.com/ADEB/</fr:uri>
+        <fr:display-uri>ADEB</fr:display-uri>
+        <fr:route>/ADEB/</fr:route>
+        <fr:title text="Trying out Forester">Trying out Forester</fr:title>
+      </fr:frontmatter>
+      <fr:mainmatter>
+        <html:p>Despite spending several years building an <fr:link href="https://www.orgroam.com/" type="external">org-roam</fr:link> database made up of 1000s of org knowledge nodes, I am taking the plunge this week and trying out <fr:link href="https://www.forester-notes.org/index/index.xml" type="external">Forester</fr:link>, a for authoring, exploring, and sharing scientific and mathematical hypertexts, created by <fr:link href="https://jonmsterling.com/forester" type="external">Jon Sterling</fr:link>.  I am most excited to carve out a small space where I can selectively share some of that content. I was also inspired by <fr:link href="https://www.jonmsterling.com/019X/index.xml" type="external">Jon's Weeknotes</fr:link> and start writing my own weekly reflections.</html:p>
+        <html:p>Could this be the next phase in a two-decade journey to capture, link and refine my own knowledge base?  Up to this point, it has been an iterative creative process of building and rebuilding systems deeply rooted in <fr:tex display="inline"><![CDATA[\LaTeX ]]></fr:tex>, more recently Typst, all held together with some good ol' homegrown Python, Elisp and Bash. So here is returning to buffers filled with backslashes and curly brace delimeters as I plant this first public Forester tree.</html:p>
+        <html:p>Why Forester? Well, to keep a very long story short ...the <fr:link href="https://github.com/stacks/stacks-project" type="external">Stacks Project</fr:link>.  Just like Jon, I was drawn by the tagging system used by the Stacks Project used identify atomic nodes of content, like a definition, proposition, or maybe how to declare a function in a particular programming language. A tag, a four-character identifier where each character is either a digit (0-9) or an uppercase letter, is then used to identify this object of content. Although, after experimenting with these identifiers in my own workflows, I ended removing the characters I and O from the character space to avoid confusing them with digits.</html:p>
+        <html:p>I discovered the Stacks Project in the spring of 2020, which was the same time I declared <fr:tex display="inline"><![CDATA[\LaTeX ]]></fr:tex> bankruptcy. After nearly 15 years of writing notes, exams, and slides, my content had become nearly impossible to maintain. Fixing mistakes and updating material felt increasingly chaotic despite having introduced timestamp content identifiers five years earlier of the form <html:code>YYYYMMDD-HHMMSS</html:code>.  Maybe you can see why I was attracted to these easier to parse 4-character IDs as they made it easy to reference and transclude specific elements of content.</html:p>
+        <html:p>I didn’t yet know what the solution would look like to bring my knowledge base under control, but I knew I had to start over. I needed a system where every piece of content had a single source of truth. That marked the beginning of my journey toward building a modular, atomic knowledge base. The Stacks Project redfined how I defined my identifiers and more imporantly, inpired me to transclude my content at a level more conductive to building a truly modular knowledge system. It was a slow and sometimes painful process filled with wrong turns and rabbit holes, but once it started working... it felt magical.</html:p>
+        <html:figure><html:img src="/bafkrmihp42wcm3w2fwzqw27jwslpamwde5h6g7tvlkqst25tktqsq3qgmq.png" /> <html:figcaption>An early Org-Mode Table used to store tag ids (circa 2021)</html:figcaption></html:figure>
+        <html:p>I started indexing my nodes of content in an org-mode table, similar to the comma delineated mappings used by Stacks Project <fr:link href="https://github.com/stacks/stacks-project/blob/master/tags/tags" type="external">GitHub tags file</fr:link>. Within 6 months I realized that it wasn't a scalable approach and that developing content descriptions was mentally taxing.  It was also the time that I was experimenting with <fr:link href="https://obsidian.md/" type="external">Obsidian</fr:link> and <fr:link href="https://www.dendron.so/" type="external">Dendron</fr:link> (as I gave VS Code the business for a six month trial).  The outcome was choosing Obsidian (markdown) to bring context to the content that I was storing in these <html:code>*.tex</html:code> files described by with a four-character ID and schema based description. Suddenly, I started to visualise a network of my content and this ignited an energy of revisiting an idea of granuarly mapping out knowledge node dependencies in K-12 Mathematics.  I felt as though I had returned to my pedagogical roots of Connectivism from 2006.</html:p>
+        <html:p>I wrote a Python script that genenrated a tag ID, prompted for a pre-defined schema (inspired from the Dendron project), and all the supporting markdown and tex templating files for a new node of content. When I returned to the comforts of Emacs, I naturally transitioned from Obsidian to org-roam to provide the context for my <html:code>*.tex</html:code> files.  Thankfully, this was an easy migration because my <fr:tex display="inline"><![CDATA[\LaTeX ]]></fr:tex> workflows and content was designed to work independently of the system providing the context.  I created the <fr:link href="https://youtu.be/HXa5fZjbioA?si" type="external">video: An Overview of How I Add Nodes to Emacs Org-roam</fr:link>, which describes the workflow that I was using at the time.</html:p>
+        <html:p>Of course, workflows change ... and in my case by a lot. Eventually, I stopped including the schema in the file name and relied fully on org-roam for the context my files and their contents.  I would now say that I am in yet another transitional phase, so I am going hold off talking about my current workflow just yet ... and have a little fun with Forester first! Org-roam isn't going anywhere anytime soon as I am dependent upon it for my day-to-day second brain referencing. Having played with Forester this week, it feels a little weird because I have been all in on Typst for the past year.  Not sure how I feel about returning to a <fr:tex display="inline"><![CDATA[\TeX ]]></fr:tex> based markup, but willing to give it a try.</html:p>
+      </fr:mainmatter>
+    </fr:tree>
+  </fr:mainmatter>
+  <fr:backmatter>
+    <fr:tree show-metadata="false" hidden-when-empty="true">
+      <fr:frontmatter>
+        <fr:authors />
+        <fr:title text="References">References</fr:title>
+      </fr:frontmatter>
+      <fr:mainmatter />
+    </fr:tree>
+    <fr:tree show-metadata="false" hidden-when-empty="true">
+      <fr:frontmatter>
+        <fr:authors />
+        <fr:title text="Context">Context</fr:title>
+      </fr:frontmatter>
+      <fr:mainmatter>
+        <fr:tree show-metadata="true" expanded="false" toc="false" numbered="false">
+          <fr:frontmatter>
+            <fr:authors>
+              <fr:author>
+                <fr:link href="/markholson/" title="Mark Olson" uri="https://www.mholson.com/markholson/" display-uri="markholson" type="local">Mark Olson</fr:link>
+              </fr:author>
+            </fr:authors>
+            <fr:date>
+              <fr:year>2025</fr:year>
+              <fr:month>7</fr:month>
+              <fr:day>25</fr:day>
+            </fr:date>
+            <fr:uri>https://www.mholson.com/WEEK/</fr:uri>
+            <fr:display-uri>WEEK</fr:display-uri>
+            <fr:route>/WEEK/</fr:route>
+            <fr:title text="Weeknotes">Weeknotes</fr:title>
+          </fr:frontmatter>
+          <fr:mainmatter>
+            <html:ul>
+              <html:li>
+                <fr:tree show-metadata="false">
+                  <fr:frontmatter>
+                    <fr:authors>
+                      <fr:author>
+                        <fr:link href="/markholson/" title="Mark Olson" uri="https://www.mholson.com/markholson/" display-uri="markholson" type="local">Mark Olson</fr:link>
+                      </fr:author>
+                    </fr:authors>
+                    <fr:date>
+                      <fr:year>2025</fr:year>
+                      <fr:month>10</fr:month>
+                      <fr:day>4</fr:day>
+                    </fr:date>
+                    <fr:uri>https://www.mholson.com/2025-W40/</fr:uri>
+                    <fr:display-uri>2025-W40</fr:display-uri>
+                    <fr:route>/2025-W40/</fr:route>
+                    <fr:title text="Weeknotes 2025-W40">Weeknotes 2025-W40</fr:title>
+                  </fr:frontmatter>
+                  <fr:mainmatter>
+                    <html:p>Hello World!</html:p>
+                    <fr:tree show-metadata="false">
+                      <fr:frontmatter>
+                        <fr:authors>
+                          <fr:author>
+                            <fr:link href="/markholson/" title="Mark Olson" uri="https://www.mholson.com/markholson/" display-uri="markholson" type="local">Mark Olson</fr:link>
+                          </fr:author>
+                        </fr:authors>
+                        <fr:date>
+                          <fr:year>2025</fr:year>
+                          <fr:month>10</fr:month>
+                          <fr:day>4</fr:day>
+                        </fr:date>
+                        <fr:uri>https://www.mholson.com/ADEB/</fr:uri>
+                        <fr:display-uri>ADEB</fr:display-uri>
+                        <fr:route>/ADEB/</fr:route>
+                        <fr:title text="Trying out Forester">Trying out Forester</fr:title>
+                      </fr:frontmatter>
+                      <fr:mainmatter>
+                        <html:p>Despite spending several years building an <fr:link href="https://www.orgroam.com/" type="external">org-roam</fr:link> database made up of 1000s of org knowledge nodes, I am taking the plunge this week and trying out <fr:link href="https://www.forester-notes.org/index/index.xml" type="external">Forester</fr:link>, a for authoring, exploring, and sharing scientific and mathematical hypertexts, created by <fr:link href="https://jonmsterling.com/forester" type="external">Jon Sterling</fr:link>.  I am most excited to carve out a small space where I can selectively share some of that content. I was also inspired by <fr:link href="https://www.jonmsterling.com/019X/index.xml" type="external">Jon's Weeknotes</fr:link> and start writing my own weekly reflections.</html:p>
+                        <html:p>Could this be the next phase in a two-decade journey to capture, link and refine my own knowledge base?  Up to this point, it has been an iterative creative process of building and rebuilding systems deeply rooted in <fr:tex display="inline"><![CDATA[\LaTeX ]]></fr:tex>, more recently Typst, all held together with some good ol' homegrown Python, Elisp and Bash. So here is returning to buffers filled with backslashes and curly brace delimeters as I plant this first public Forester tree.</html:p>
+                        <html:p>Why Forester? Well, to keep a very long story short ...the <fr:link href="https://github.com/stacks/stacks-project" type="external">Stacks Project</fr:link>.  Just like Jon, I was drawn by the tagging system used by the Stacks Project used identify atomic nodes of content, like a definition, proposition, or maybe how to declare a function in a particular programming language. A tag, a four-character identifier where each character is either a digit (0-9) or an uppercase letter, is then used to identify this object of content. Although, after experimenting with these identifiers in my own workflows, I ended removing the characters I and O from the character space to avoid confusing them with digits.</html:p>
+                        <html:p>I discovered the Stacks Project in the spring of 2020, which was the same time I declared <fr:tex display="inline"><![CDATA[\LaTeX ]]></fr:tex> bankruptcy. After nearly 15 years of writing notes, exams, and slides, my content had become nearly impossible to maintain. Fixing mistakes and updating material felt increasingly chaotic despite having introduced timestamp content identifiers five years earlier of the form <html:code>YYYYMMDD-HHMMSS</html:code>.  Maybe you can see why I was attracted to these easier to parse 4-character IDs as they made it easy to reference and transclude specific elements of content.</html:p>
+                        <html:p>I didn’t yet know what the solution would look like to bring my knowledge base under control, but I knew I had to start over. I needed a system where every piece of content had a single source of truth. That marked the beginning of my journey toward building a modular, atomic knowledge base. The Stacks Project redfined how I defined my identifiers and more imporantly, inpired me to transclude my content at a level more conductive to building a truly modular knowledge system. It was a slow and sometimes painful process filled with wrong turns and rabbit holes, but once it started working... it felt magical.</html:p>
+                        <html:figure><html:img src="/bafkrmihp42wcm3w2fwzqw27jwslpamwde5h6g7tvlkqst25tktqsq3qgmq.png" /> <html:figcaption>An early Org-Mode Table used to store tag ids (circa 2021)</html:figcaption></html:figure>
+                        <html:p>I started indexing my nodes of content in an org-mode table, similar to the comma delineated mappings used by Stacks Project <fr:link href="https://github.com/stacks/stacks-project/blob/master/tags/tags" type="external">GitHub tags file</fr:link>. Within 6 months I realized that it wasn't a scalable approach and that developing content descriptions was mentally taxing.  It was also the time that I was experimenting with <fr:link href="https://obsidian.md/" type="external">Obsidian</fr:link> and <fr:link href="https://www.dendron.so/" type="external">Dendron</fr:link> (as I gave VS Code the business for a six month trial).  The outcome was choosing Obsidian (markdown) to bring context to the content that I was storing in these <html:code>*.tex</html:code> files described by with a four-character ID and schema based description. Suddenly, I started to visualise a network of my content and this ignited an energy of revisiting an idea of granuarly mapping out knowledge node dependencies in K-12 Mathematics.  I felt as though I had returned to my pedagogical roots of Connectivism from 2006.</html:p>
+                        <html:p>I wrote a Python script that genenrated a tag ID, prompted for a pre-defined schema (inspired from the Dendron project), and all the supporting markdown and tex templating files for a new node of content. When I returned to the comforts of Emacs, I naturally transitioned from Obsidian to org-roam to provide the context for my <html:code>*.tex</html:code> files.  Thankfully, this was an easy migration because my <fr:tex display="inline"><![CDATA[\LaTeX ]]></fr:tex> workflows and content was designed to work independently of the system providing the context.  I created the <fr:link href="https://youtu.be/HXa5fZjbioA?si" type="external">video: An Overview of How I Add Nodes to Emacs Org-roam</fr:link>, which describes the workflow that I was using at the time.</html:p>
+                        <html:p>Of course, workflows change ... and in my case by a lot. Eventually, I stopped including the schema in the file name and relied fully on org-roam for the context my files and their contents.  I would now say that I am in yet another transitional phase, so I am going hold off talking about my current workflow just yet ... and have a little fun with Forester first! Org-roam isn't going anywhere anytime soon as I am dependent upon it for my day-to-day second brain referencing. Having played with Forester this week, it feels a little weird because I have been all in on Typst for the past year.  Not sure how I feel about returning to a <fr:tex display="inline"><![CDATA[\TeX ]]></fr:tex> based markup, but willing to give it a try.</html:p>
+                      </fr:mainmatter>
+                    </fr:tree>
+                  </fr:mainmatter>
+                </fr:tree>
+              </html:li>
+            </html:ul>
+          </fr:mainmatter>
+        </fr:tree>
+      </fr:mainmatter>
+    </fr:tree>
+    <fr:tree show-metadata="false" hidden-when-empty="true">
+      <fr:frontmatter>
+        <fr:authors />
+        <fr:title text="Backlinks">Backlinks</fr:title>
+      </fr:frontmatter>
+      <fr:mainmatter />
+    </fr:tree>
+    <fr:tree show-metadata="false" hidden-when-empty="true">
+      <fr:frontmatter>
+        <fr:authors />
+        <fr:title text="Related">Related</fr:title>
+      </fr:frontmatter>
+      <fr:mainmatter />
+    </fr:tree>
+    <fr:tree show-metadata="false" hidden-when-empty="true">
+      <fr:frontmatter>
+        <fr:authors />
+        <fr:title text="Contributions">Contributions</fr:title>
+      </fr:frontmatter>
+      <fr:mainmatter />
+    </fr:tree>
+  </fr:backmatter>
+</fr:tree>
