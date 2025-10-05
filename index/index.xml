@@ -11,7 +11,7 @@
   <fr:mainmatter>
     <html:p>Welcome to <html:em>mholson.com</html:em>.</html:p>
     <html:p>This site launched on Sunday, Oct 5, 2025.</html:p>
-    <html:p>There is not currently too much content available.  You can use <html:code>CMD-K</html:code> or <html:code>CTRL-K</html:code>, depending on your OS of choice to search the global index of the site.  Otherwise, you can head over to my <fr:link href="/WEEK/" title="Weeknotes" uri="https://www.mholson.com/WEEK/" display-uri="WEEK" type="local">Weeknotes</fr:link>.</html:p>
+    <html:p>There is not currently too much content available.  You can use <html:code>CMD-K</html:code> or <html:code>CTRL-K</html:code>, depending on your OS of choice, to search the global site index by either title or ID.  Otherwise, you can head over to my <fr:link href="/WEEK/" title="Weeknotes" uri="https://www.mholson.com/WEEK/" display-uri="WEEK" type="local">Weeknotes</fr:link>.</html:p>
   </fr:mainmatter>
   <fr:backmatter>
     <fr:tree show-metadata="false" hidden-when-empty="true">
