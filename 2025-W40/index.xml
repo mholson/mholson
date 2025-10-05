@@ -18,7 +18,8 @@
     <fr:title text="Weeknotes 2025-W40">Weeknotes 2025-W40</fr:title>
   </fr:frontmatter>
   <fr:mainmatter>
-    <html:p>Hello World!</html:p>
+    <html:p>Hello World!  Hello Forester!</html:p>
+    <html:p>It has been a few years since I last had a property on the web.  So here I am experimenting with Forester!</html:p>
     <fr:tree show-metadata="false">
       <fr:frontmatter>
         <fr:authors>
@@ -72,8 +73,8 @@
             </fr:authors>
             <fr:date>
               <fr:year>2025</fr:year>
-              <fr:month>7</fr:month>
-              <fr:day>25</fr:day>
+              <fr:month>10</fr:month>
+              <fr:day>5</fr:day>
             </fr:date>
             <fr:uri>https://www.mholson.com/WEEK/</fr:uri>
             <fr:display-uri>WEEK</fr:display-uri>
@@ -101,7 +102,8 @@
                     <fr:title text="Weeknotes 2025-W40">Weeknotes 2025-W40</fr:title>
                   </fr:frontmatter>
                   <fr:mainmatter>
-                    <html:p>Hello World!</html:p>
+                    <html:p>Hello World!  Hello Forester!</html:p>
+                    <html:p>It has been a few years since I last had a property on the web.  So here I am experimenting with Forester!</html:p>
                     <fr:tree show-metadata="false">
                       <fr:frontmatter>
                         <fr:authors>

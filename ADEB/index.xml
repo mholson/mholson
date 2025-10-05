@@ -60,7 +60,8 @@
             <fr:title text="Weeknotes 2025-W40">Weeknotes 2025-W40</fr:title>
           </fr:frontmatter>
           <fr:mainmatter>
-            <html:p>Hello World!</html:p>
+            <html:p>Hello World!  Hello Forester!</html:p>
+            <html:p>It has been a few years since I last had a property on the web.  So here I am experimenting with Forester!</html:p>
             <fr:tree show-metadata="false">
               <fr:frontmatter>
                 <fr:authors>
