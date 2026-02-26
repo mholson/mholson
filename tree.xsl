@@ -11,6 +11,7 @@
       <head>
         <meta name="viewport" content="width=device-width" />
         <link rel="stylesheet" href="{/f:tree/@base-url}style.css" />
+        <link rel="stylesheet" href="{/f:tree/@base-url}custom.css" />
         <link rel="stylesheet" href="{/f:tree/@base-url}katex.min.css" />
         <script type="text/javascript">
           <xsl:if test="/f:tree/f:frontmatter/f:source-path">

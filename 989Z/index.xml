@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/default.xsl"?>
+<fr:tree xmlns:fr="http://www.forester-notes.org" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:xml="http://www.w3.org/XML/1998/namespace" root="false" base-url="/">
+  <fr:frontmatter>
+    <fr:authors>
+      <fr:author>
+        <fr:link href="/markholson/" title="Mark Olson" uri="https://www.mholson.com/markholson/" display-uri="markholson" type="local">Mark Olson</fr:link>
+      </fr:author>
+    </fr:authors>
+    <fr:date>
+      <fr:year>2026</fr:year>
+      <fr:month>2</fr:month>
+      <fr:day>25</fr:day>
+    </fr:date>
+    <fr:uri>https://www.mholson.com/989Z/</fr:uri>
+    <fr:display-uri>989Z</fr:display-uri>
+    <fr:route>/989Z/</fr:route>
+    <fr:title text="Stillvaro › How To Use Stillvaro"><fr:link href="/989X/" title="Stillvaro" uri="https://www.mholson.com/989X/" display-uri="989X" type="local">Stillvaro</fr:link> › How To Use Stillvaro</fr:title>
+  </fr:frontmatter>
+  <fr:mainmatter>
+    <html:p>
+      <html:strong>Quick Start</html:strong>
+    </html:p>
+    <html:ol><html:li>Open Stillvaro and complete onboarding.</html:li>
+<html:li>Start with the current 4-digit block shown above the ring.</html:li>
+<html:li>Tap or drag to and hold the matching digits on the ring in order.</html:li>
+<html:li>Complete the block and continue to the next one.</html:li></html:ol>
+    <html:p>
+      <html:strong>If You Miss a Digit</html:strong>
+    </html:p>
+    <html:ul><html:li>Keep going calmly.</html:li>
+<html:li>The app gradually reduces digit options to hint the next after a miss.</html:li>
+<html:li>Use Guidance Mode if you want constant next-digit highlighting.</html:li></html:ul>
+    <html:p>
+      <html:strong>Jump to a Specific Block</html:strong>
+    </html:p>
+    <html:ol><html:li>Open Settings.</html:li>
+<html:li>Under Up Next, choose Next Block.</html:li>
+<html:li>Pick a block number and tap Done.</html:li></html:ol>
+    <html:p>
+      <html:strong>Choose Launch and Reset Behavior</html:strong>
+    </html:p>
+    <html:ol><html:li>Open Settings.</html:li>
+<html:li>Under Session Start, set Resume from last position on launch on or off.</html:li>
+<html:li>Set Starting Position for manual reset and launch when resume is off.</html:li></html:ol>
+    <html:p>
+      <html:strong>Use Reference Peek</html:strong>
+    </html:p>
+    <html:ol><html:li>Enable Reference Peek in Settings.</html:li>
+<html:li>Open the Reference Peek panel from the main screen or swipe left to right.</html:li></html:ol>
+    <html:p>
+      <html:strong>Accessibility Setup from iOS Settings</html:strong>
+    </html:p>
+    <html:ul><html:li>Enable Larger Text in iOS Accessibility settings if desired.</html:li>
+<html:li>Enable Reduce Motion to suppress motion-heavy interactions.</html:li>
+<html:li>Enable Increased Contrast or Differentiate Without Color for stronger visual cues.</html:li>
+<html:li>Use VoiceOver for spoken labels and state hints. (feedback welcome)</html:li></html:ul>
+  </fr:mainmatter>
+  <fr:backmatter>
+    <fr:tree show-metadata="false" hidden-when-empty="true">
+      <fr:frontmatter>
+        <fr:authors />
+        <fr:title text="References">References</fr:title>
+      </fr:frontmatter>
+      <fr:mainmatter />
+    </fr:tree>
+    <fr:tree show-metadata="false" hidden-when-empty="true">
+      <fr:frontmatter>
+        <fr:authors />
+        <fr:title text="Context">Context</fr:title>
+      </fr:frontmatter>
+      <fr:mainmatter>
+        <fr:tree show-metadata="true" expanded="false" toc="false" numbered="false">
+          <fr:frontmatter>
+            <fr:authors>
+              <fr:author>
+                <fr:link href="/markholson/" title="Mark Olson" uri="https://www.mholson.com/markholson/" display-uri="markholson" type="local">Mark Olson</fr:link>
+              </fr:author>
+            </fr:authors>
+            <fr:date>
+              <fr:year>2026</fr:year>
+              <fr:month>2</fr:month>
+              <fr:day>25</fr:day>
+            </fr:date>
+            <fr:uri>https://www.mholson.com/989X/</fr:uri>
+            <fr:display-uri>989X</fr:display-uri>
+            <fr:route>/989X/</fr:route>
+            <fr:title text="Stillvaro">Stillvaro</fr:title>
+          </fr:frontmatter>
+          <fr:mainmatter>
+            <html:p>
+              <html:em>No timers. No streaks. Only the next four.</html:em>
+            </html:p>
+            <html:p>
+              <html:em>Memorize pi calmly, in your own flow.</html:em>
+            </html:p>
+            <html:img src="/bafkrmib7yoyn4kzubeewytcpbqjcj5kqkrmjnui5hrefcjg5an5uj6ddki.png" />
+            <html:p>
+              <html:strong>Download on the App Store</html:strong>
+            </html:p>
+            <html:img class="sidefigure" src="/bafkrmidht573hjlmiyxnmjwjt2bkhprxwa2ipjlkcq2lrmheuo4rf2d7oa.jpg" />
+            <html:p>
+              <html:strong>Section: How It Works</html:strong>
+            </html:p>
+            <html:ul><html:li>Practice pi in clean 4-digit blocks.</html:li>
+<html:li>Enter each digit from the ring.</html:li>
+<html:li>Use Guidance Mode when you want support.</html:li>
+<html:li>Move forward block by block at your own pace.</html:li></html:ul>
+            <html:p>
+              <html:strong>Stay Oriented</html:strong>
+            </html:p>
+            <html:ul><html:li>Up Next controls where you continue.</html:li>
+<html:li>Reference Peek lets you browse surrouding digits.</html:li>
+<html:li>Session Start controls launch and reset behavior.</html:li></html:ul>
+            <html:p>
+              <html:strong>Accessibility-First</html:strong>
+            </html:p>
+            <html:p>Stillvaro supports VoiceOver labels, Larger Text limits, Increased Contrast, Reduced Motion behavior, and Differentiate Without Color cues.</html:p>
+            <html:p>
+              <html:strong>Private by Design</html:strong>
+            </html:p>
+            <html:p>No account. No ads. No analytics tracking. Your settings and session data stay on your device.</html:p>
+            <fr:tree show-metadata="false">
+              <fr:frontmatter>
+                <fr:authors>
+                  <fr:author>
+                    <fr:link href="/markholson/" title="Mark Olson" uri="https://www.mholson.com/markholson/" display-uri="markholson" type="local">Mark Olson</fr:link>
+                  </fr:author>
+                </fr:authors>
+                <fr:date>
+                  <fr:year>2026</fr:year>
+                  <fr:month>2</fr:month>
+                  <fr:day>25</fr:day>
+                </fr:date>
+                <fr:uri>https://www.mholson.com/989Y/</fr:uri>
+                <fr:display-uri>989Y</fr:display-uri>
+                <fr:route>/989Y/</fr:route>
+                <fr:title text="Stillvaro Privacy Policy">Stillvaro Privacy Policy</fr:title>
+              </fr:frontmatter>
+              <fr:mainmatter>
+                <html:p>Effective date: February 26, 2026.</html:p>
+                <html:p>Stillvaro is designed to work privately on your device.</html:p>
+                <html:p>
+                  <html:strong>What we collect</html:strong>
+                </html:p>
+                <html:ul><html:li>Stillvaro does not require an account.</html:li>
+<html:li>Stillvaro does not collect personal information.</html:li>
+<html:li>Stillvaro does not collect contact information, location data, or identifiers.</html:li>
+<html:li>Stillvaro does not use analytics SDKs, advertising SDKs, or tracking technologies.</html:li></html:ul>
+                <html:p>
+                  <html:strong>What data is stored on device</html:strong>
+                </html:p>
+                <html:ul><html:li>App settings (for example: Guidance Mode, haptics preference, launch behavior, and block preferences).</html:li>
+<html:li>Session state needed to resume progress (for example: current block, completed count, and local heat field/session summary state).</html:li></html:ul>
+                <html:p>
+                  <html:strong>How data is used</html:strong>
+                </html:p>
+                <html:ul><html:li>All stored data is used only to provide app functionality on your device.</html:li>
+<html:li>Data is not sold, shared, or used for cross-app tracking.</html:li></html:ul>
+                <html:p>
+                  <html:strong>Data sharing</html:strong>
+                </html:p>
+                <html:p>Stillvaro does not share data with third parties.</html:p>
+                <html:p>Stillvaro can utilize Apple's App Analytics to understand the app's engagement and usage. Data is provided if you have opted-in to share analytics, diagnostics, and usage information with App Developers in your device's settings. Apple collects this information anonymously. You can opt-in (or out) by following the instructions: <fr:link href="https://support.apple.com/HT202100" type="external">https://support.apple.com/HT202100</fr:link></html:p>
+                <html:p>
+                  <html:strong>Data retention and deletion</html:strong>
+                </html:p>
+                <html:ul><html:li>Session and settings data remain on your device until changed or removed.</html:li>
+<html:li>You can reset your session from inside the app.</html:li>
+<html:li>You can remove all app data by deleting the app from your device.</html:li></html:ul>
+                <html:p>
+                  <html:strong>Children's privacy</html:strong>
+                </html:p>
+                <html:p>Stillvaro does not knowingly collect personal information from children.</html:p>
+                <html:p>
+                  <html:strong>Changes to this policy</html:strong>
+                </html:p>
+                <html:p>If this policy changes, the effective date will be updated on this page.</html:p>
+                <html:p>
+                  <html:strong>Contact</html:strong>
+                </html:p>
+                <html:p>For privacy questions, contact: <fr:link href="mailto:support@mholson.com" type="external">support@mholson.com</fr:link>.</html:p>
+              </fr:mainmatter>
+            </fr:tree>
+            <fr:tree show-metadata="false">
+              <fr:frontmatter>
+                <fr:authors>
+                  <fr:author>
+                    <fr:link href="/markholson/" title="Mark Olson" uri="https://www.mholson.com/markholson/" display-uri="markholson" type="local">Mark Olson</fr:link>
+                  </fr:author>
+                </fr:authors>
+                <fr:date>
+                  <fr:year>2026</fr:year>
+                  <fr:month>2</fr:month>
+                  <fr:day>25</fr:day>
+                </fr:date>
+                <fr:uri>https://www.mholson.com/989Z/</fr:uri>
+                <fr:display-uri>989Z</fr:display-uri>
+                <fr:route>/989Z/</fr:route>
+                <fr:title text="How To Use Stillvaro">How To Use Stillvaro</fr:title>
+              </fr:frontmatter>
+              <fr:mainmatter>
+                <html:p>
+                  <html:strong>Quick Start</html:strong>
+                </html:p>
+                <html:ol><html:li>Open Stillvaro and complete onboarding.</html:li>
+<html:li>Start with the current 4-digit block shown above the ring.</html:li>
+<html:li>Tap or drag to and hold the matching digits on the ring in order.</html:li>
+<html:li>Complete the block and continue to the next one.</html:li></html:ol>
+                <html:p>
+                  <html:strong>If You Miss a Digit</html:strong>
+                </html:p>
+                <html:ul><html:li>Keep going calmly.</html:li>
+<html:li>The app gradually reduces digit options to hint the next after a miss.</html:li>
+<html:li>Use Guidance Mode if you want constant next-digit highlighting.</html:li></html:ul>
+                <html:p>
+                  <html:strong>Jump to a Specific Block</html:strong>
+                </html:p>
+                <html:ol><html:li>Open Settings.</html:li>
+<html:li>Under Up Next, choose Next Block.</html:li>
+<html:li>Pick a block number and tap Done.</html:li></html:ol>
+                <html:p>
+                  <html:strong>Choose Launch and Reset Behavior</html:strong>
+                </html:p>
+                <html:ol><html:li>Open Settings.</html:li>
+<html:li>Under Session Start, set Resume from last position on launch on or off.</html:li>
+<html:li>Set Starting Position for manual reset and launch when resume is off.</html:li></html:ol>
+                <html:p>
+                  <html:strong>Use Reference Peek</html:strong>
+                </html:p>
+                <html:ol><html:li>Enable Reference Peek in Settings.</html:li>
+<html:li>Open the Reference Peek panel from the main screen or swipe left to right.</html:li></html:ol>
+                <html:p>
+                  <html:strong>Accessibility Setup from iOS Settings</html:strong>
+                </html:p>
+                <html:ul><html:li>Enable Larger Text in iOS Accessibility settings if desired.</html:li>
+<html:li>Enable Reduce Motion to suppress motion-heavy interactions.</html:li>
+<html:li>Enable Increased Contrast or Differentiate Without Color for stronger visual cues.</html:li>
+<html:li>Use VoiceOver for spoken labels and state hints. (feedback welcome)</html:li></html:ul>
+              </fr:mainmatter>
+            </fr:tree>
+            <fr:tree show-metadata="false">
+              <fr:frontmatter>
+                <fr:authors>
+                  <fr:author>
+                    <fr:link href="/markholson/" title="Mark Olson" uri="https://www.mholson.com/markholson/" display-uri="markholson" type="local">Mark Olson</fr:link>
+                  </fr:author>
+                </fr:authors>
+                <fr:date>
+                  <fr:year>2026</fr:year>
+                  <fr:month>2</fr:month>
+                  <fr:day>25</fr:day>
+                </fr:date>
+                <fr:uri>https://www.mholson.com/9890/</fr:uri>
+                <fr:display-uri>9890</fr:display-uri>
+                <fr:route>/9890/</fr:route>
+                <fr:title text="Stillvaro Version Log">Stillvaro Version Log</fr:title>
+              </fr:frontmatter>
+              <fr:mainmatter>
+                <html:ul><html:li>Calm pi practice in sequential 4-digit blocks.</html:li>
+<html:li>Ring-based digit entry with tap input.</html:li>
+<html:li>Optional trace-style ring interaction when motion is enabled.</html:li>
+<html:li>Guidance Mode to highlight the next expected digit.</html:li>
+<html:li>Adaptive hint system after incorrect attempts.</html:li>
+<html:li>Up Next strip and picker for selecting the next block.</html:li>
+<html:li>Session Start controls for launch behavior and reset start position.</html:li>
+<html:li>Resume from last position on launch option.</html:li>
+<html:li>Reference Peek side panel for browsing and jumping to blocks.</html:li>
+<html:li>Session history stack of recent completed blocks.</html:li>
+<html:li>Field visualization of clean-block accumulation.</html:li>
+<html:li>Session stats: blocks completed, digits practiced, misses, and most missed block.</html:li>
+<html:li>Onboarding flow with first-run controls.</html:li>
+<html:li>Haptics toggle for tactile feedback.</html:li>
+<html:li>Accessibility support for VoiceOver, Larger Text, Increased Contrast, Reduced Motion, and Differentiate Without Color.</html:li>
+<html:li>Local-only storage for settings and session state.</html:li></html:ul>
+              </fr:mainmatter>
+            </fr:tree>
+          </fr:mainmatter>
+        </fr:tree>
+      </fr:mainmatter>
+    </fr:tree>
+    <fr:tree show-metadata="false" hidden-when-empty="true">
+      <fr:frontmatter>
+        <fr:authors />
+        <fr:title text="Backlinks">Backlinks</fr:title>
+      </fr:frontmatter>
+      <fr:mainmatter />
+    </fr:tree>
+    <fr:tree show-metadata="false" hidden-when-empty="true">
+      <fr:frontmatter>
+        <fr:authors />
+        <fr:title text="Related">Related</fr:title>
+      </fr:frontmatter>
+      <fr:mainmatter />
+    </fr:tree>
+    <fr:tree show-metadata="false" hidden-when-empty="true">
+      <fr:frontmatter>
+        <fr:authors />
+        <fr:title text="Contributions">Contributions</fr:title>
+      </fr:frontmatter>
+      <fr:mainmatter />
+    </fr:tree>
+  </fr:backmatter>
+</fr:tree>
