@@ -116,7 +116,7 @@
         <button class="ghost" id="zoomOut">－ Zoom out</button>
         <button class="ghost" id="resetView">Reset view</button>
       </div>
-      <label class="toggle"><input type="checkbox" id="showDeltas" /> Show Δx and Δy bars on the graph</label>
+      <label class="toggle"><input type="checkbox" id="showDeltas" /> Show Δt and Δd bars on the graph</label>
       <p class="zoomtip">Tip: you can also scroll, pinch, or drag directly on the graph. Zoom right in on P₁ and watch the curve start to look like a straight line.</p>
 
     </div>
@@ -203,10 +203,10 @@ board.create('line',
   [ [t1, d(t1)], [t1 + 1, d(t1) + instSpeed] ],
   { strokeColor: '#00B3A4', strokeWidth: 1.5, dash: 2, straightFirst: true, straightLast: true });
 
-// ---- Δx / Δy guide bars (toggled on/off) -----------------------------------
-// Vertical dashed bars at x1 and x2 drop to the time-axis: the gap between
-// them is Δx. Horizontal dashed bars at y1 and y2 reach the distance-axis:
-// the gap between them is Δy. All update live as P2 moves.
+// ---- Δt / Δd guide bars (toggled on/off) -----------------------------------
+// Vertical dashed bars at t1 and t2 drop to the time-axis: the gap between
+// them is Δt. Horizontal dashed bars at d1 and d2 reach the distance-axis:
+// the gap between them is Δd. All update live as P2 moves.
 const DX = '#E8743B', DY = '#2E6FB7';
 const pin = { visible: false, name: '', fixed: true, showInfobox: false };
 const f_p1x = board.create('point', [t1, 0], pin);
@@ -222,10 +222,10 @@ deltaEls.push(board.create('segment', [f_p1y, P1], { ...bar, strokeColor: DY }))
 deltaEls.push(board.create('segment', [f_p2y, P2], { ...bar, strokeColor: DY }));
 
 deltaEls.push(board.create('text',
-  [ () => (t1 + P2.X()) / 2, -0.6, () => 'Δx = ' + (P2.X() - t1).toFixed(2) + ' s' ],
+  [ () => (t1 + P2.X()) / 2, -0.6, () => 'Δt = ' + (P2.X() - t1).toFixed(2) + ' s' ],
   { visible: false, fixed: true, anchorX: 'middle', color: DX, fontSize: 13, cssStyle: 'font-weight:600' }));
 deltaEls.push(board.create('text',
-  [ 0.12, () => (d(t1) + P2.Y()) / 2, () => 'Δy = ' + (P2.Y() - d(t1)).toFixed(2) + ' m' ],
+  [ 0.12, () => (d(t1) + P2.Y()) / 2, () => 'Δd = ' + (P2.Y() - d(t1)).toFixed(2) + ' m' ],
   { visible: false, fixed: true, anchorX: 'left', anchorY: 'middle', color: DY, fontSize: 13, cssStyle: 'font-weight:600' }));
 
 function setDeltaBars(on) {
