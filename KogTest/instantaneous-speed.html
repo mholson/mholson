@@ -42,7 +42,7 @@
   h1 { font-size: 1.15rem; margin: 0 0 4px; color: var(--k-primary); }
   p.lead { margin: 0 0 14px; color: var(--k-text-muted); font-size: .92rem; line-height: 1.45; }
 
-  .readout { display: grid; gap: 10px; }
+  .readout { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .stat { background: #fff; border: 1px solid var(--k-border); border-radius: 10px; padding: 10px 12px; }
   .stat .label { font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; color: var(--k-text-muted); }
   .stat .value { font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
@@ -61,6 +61,8 @@
 
   .hint { font-size: .82rem; color: var(--k-text-muted); margin-top: 12px; line-height: 1.5; }
   .zoomtip { font-size: .78rem; color: var(--k-text-muted); margin: 8px 2px 0; line-height: 1.45; }
+  .toggle { display: inline-flex; align-items: center; gap: 8px; font-size: .88rem; color: var(--k-text); margin-top: 14px; cursor: pointer; }
+  .toggle input { width: 16px; height: 16px; accent-color: var(--k-primary); cursor: pointer; }
   .gap { color: var(--k-formalize); font-weight: 600; }
 
   .tablecard { margin-top: 16px; }
@@ -114,6 +116,7 @@
         <button class="ghost" id="zoomOut">－ Zoom out</button>
         <button class="ghost" id="resetView">Reset view</button>
       </div>
+      <label class="toggle"><input type="checkbox" id="showDeltas" /> Show Δx and Δy bars on the graph</label>
       <p class="zoomtip">Tip: you can also scroll, pinch, or drag directly on the graph. Zoom right in on P₁ and watch the curve start to look like a straight line.</p>
 
     </div>
@@ -187,7 +190,7 @@ const P1 = board.create('point', [t1, d(t1)], {
 });
 
 // P2: a glider constrained to the curve itself, draggable by the student
-let t2start = 3.4;
+let t2start = 3;
 const P2 = board.create('glider', [t2start, d(t2start), curve], {
   name: 'P₂', size: 5, color: '#00B3A4', label: { offset: [10, 8], fontSize: 14 }
 });
@@ -199,6 +202,36 @@ board.create('line', [P1, P2], { strokeColor: '#2E6FB7', strokeWidth: 2.5, strai
 board.create('line',
   [ [t1, d(t1)], [t1 + 1, d(t1) + instSpeed] ],
   { strokeColor: '#00B3A4', strokeWidth: 1.5, dash: 2, straightFirst: true, straightLast: true });
+
+// ---- Δx / Δy guide bars (toggled on/off) -----------------------------------
+// Vertical dashed bars at x1 and x2 drop to the time-axis: the gap between
+// them is Δx. Horizontal dashed bars at y1 and y2 reach the distance-axis:
+// the gap between them is Δy. All update live as P2 moves.
+const DX = '#E8743B', DY = '#2E6FB7';
+const pin = { visible: false, name: '', fixed: true, showInfobox: false };
+const f_p1x = board.create('point', [t1, 0], pin);
+const f_p2x = board.create('point', [() => P2.X(), 0], pin);
+const f_p1y = board.create('point', [0, d(t1)], pin);
+const f_p2y = board.create('point', [0, () => P2.Y()], pin);
+
+const deltaEls = [];
+const bar = { dash: 2, strokeWidth: 1.5, visible: false, fixed: true, highlight: false };
+deltaEls.push(board.create('segment', [f_p1x, P1], { ...bar, strokeColor: DX }));
+deltaEls.push(board.create('segment', [f_p2x, P2], { ...bar, strokeColor: DX }));
+deltaEls.push(board.create('segment', [f_p1y, P1], { ...bar, strokeColor: DY }));
+deltaEls.push(board.create('segment', [f_p2y, P2], { ...bar, strokeColor: DY }));
+
+deltaEls.push(board.create('text',
+  [ () => (t1 + P2.X()) / 2, -0.6, () => 'Δx = ' + (P2.X() - t1).toFixed(2) + ' s' ],
+  { visible: false, fixed: true, anchorX: 'middle', color: DX, fontSize: 13, cssStyle: 'font-weight:600' }));
+deltaEls.push(board.create('text',
+  [ 0.12, () => (d(t1) + P2.Y()) / 2, () => 'Δy = ' + (P2.Y() - d(t1)).toFixed(2) + ' m' ],
+  { visible: false, fixed: true, anchorX: 'left', anchorY: 'middle', color: DY, fontSize: 13, cssStyle: 'font-weight:600' }));
+
+function setDeltaBars(on) {
+  deltaEls.forEach(el => el.setAttribute({ visible: on }));
+  board.update();
+}
 
 // ---- Live readout ----------------------------------------------------------
 const avgVal = document.getElementById('avgVal');
@@ -279,6 +312,9 @@ document.getElementById('resetView').addEventListener('click', () => {
   board.setBoundingBox(INITIAL_BBOX, false);
   board.update();
 });
+
+const showDeltas = document.getElementById('showDeltas');
+showDeltas.addEventListener('change', () => setDeltaBars(showDeltas.checked));
 </script>
 </body>
 </html>
