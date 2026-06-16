@@ -357,6 +357,7 @@
   button:active { transform: translateY(1px); }
 
   .hint { font-size: .82rem; color: var(--k-text-muted); margin-top: 12px; line-height: 1.5; }
+  .zoomtip { font-size: .78rem; color: var(--k-text-muted); margin: 8px 2px 0; line-height: 1.45; }
   .gap { color: var(--k-formalize); font-weight: 600; }
 
   .tablecard { margin-top: 16px; }
@@ -405,6 +406,13 @@
         <button class="ghost" id="reset">Reset</button>
       </div>
 
+      <div class="controls">
+        <button class="ghost" id="zoomIn">＋ Zoom in on P₁</button>
+        <button class="ghost" id="zoomOut">－ Zoom out</button>
+        <button class="ghost" id="resetView">Reset view</button>
+      </div>
+      <p class="zoomtip">Tip: you can also scroll, pinch, or drag directly on the graph. Zoom right in on P₁ and watch the curve start to look like a straight line.</p>
+
     </div>
   </div>
 
@@ -451,11 +459,15 @@ const d  = (t) => t * t;
 const t1 = 2;            // fixed instant (P1)
 const instSpeed = 2 * t1; // = 4.0 m/s
 
+const INITIAL_BBOX = [-0.4, 11, 4.4, -1.2];
 const board = JXG.JSXGraph.initBoard('board', {
-  boundingbox: [-0.4, 11, 4.4, -1.2],
+  boundingbox: INITIAL_BBOX,
   axis: true,
   showCopyright: false,
   showNavigation: false,
+  // Free exploration: scroll-wheel and pinch to zoom, drag to pan.
+  zoom: { wheel: true, needShift: false, pinch: true, min: 0.05, max: 200 },
+  pan: { enabled: true, needShift: false, needTwoFingers: false },
   defaultAxes: {
     x: { name: 'time (s)', withLabel: true, label: { position: 'rt', offset: [-10, 16] } },
     y: { name: 'distance (m)', withLabel: true, label: { position: 'urt', offset: [10, -5] } }
@@ -547,6 +559,23 @@ document.getElementById('step').addEventListener('click', () => {
 document.getElementById('record').addEventListener('click', () => recordRow(P2.X()));
 document.getElementById('clear').addEventListener('click', clearTable);
 document.getElementById('reset').addEventListener('click', () => { setP2(t2start); });
+
+// ---- Zoom: scale the view toward P1 so the point stays centred -------------
+function zoomTowardP1(factor) {
+  const bb = board.getBoundingBox(); // [xmin, ymax, xmax, ymin]
+  const cx = t1, cy = d(t1);          // centre on P1
+  board.setBoundingBox([
+    cx + (bb[0] - cx) * factor, cy + (bb[1] - cy) * factor,
+    cx + (bb[2] - cx) * factor, cy + (bb[3] - cy) * factor
+  ], false);
+  board.update();
+}
+document.getElementById('zoomIn').addEventListener('click', () => zoomTowardP1(0.6));
+document.getElementById('zoomOut').addEventListener('click', () => zoomTowardP1(1 / 0.6));
+document.getElementById('resetView').addEventListener('click', () => {
+  board.setBoundingBox(INITIAL_BBOX, false);
+  board.update();
+});
 </script>
 </body>
 </html>
