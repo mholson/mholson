@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>From average speed to speed at an instant</title>
+
+<!-- JSXGraph from CDN: nothing to install, works anywhere this file is hosted -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsxgraph@1.10.1/distrib/jsxgraph.css" />
+<script src="https://cdn.jsdelivr.net/npm/jsxgraph@1.10.1/distrib/jsxgraphcore.js"></script>
+
+<style>
+  :root {
+    --k-primary:   #4B2E83;
+    --k-accent:    #00B3A4;
+    --k-formalize: #2E6FB7;
+    --k-bg:        #FFFFFF;
+    --k-surface:   #F7F6FB;
+    --k-border:    #E4E1EC;
+    --k-text:      #1F1B2E;
+    --k-text-muted:#5B5670;
+    --k-radius: 12px;
+    --k-shadow: 0 1px 3px rgba(31,27,46,.08), 0 4px 16px rgba(31,27,46,.06);
+    --k-font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--k-bg); color: var(--k-text); font-family: var(--k-font); }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 18px; }
+  .layout { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 720px) { .layout { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius);
+    box-shadow: var(--k-shadow);
+    padding: 14px;
+  }
+  #board { width: 100%; height: 380px; background: #fff; border-radius: var(--k-radius); }
+
+  h1 { font-size: 1.15rem; margin: 0 0 4px; color: var(--k-primary); }
+  p.lead { margin: 0 0 14px; color: var(--k-text-muted); font-size: .92rem; line-height: 1.45; }
+
+  .readout { display: grid; gap: 10px; }
+  .stat { background: #fff; border: 1px solid var(--k-border); border-radius: 10px; padding: 10px 12px; }
+  .stat .label { font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; color: var(--k-text-muted); }
+  .stat .value { font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat.avg .value { color: var(--k-primary); }
+  .stat.inst .value { color: var(--k-accent); }
+  .stat .sub { font-size: .78rem; color: var(--k-text-muted); margin-top: 2px; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  button {
+    font-family: inherit; font-size: .85rem; font-weight: 600;
+    color: #fff; background: var(--k-primary); border: none;
+    border-radius: 8px; padding: 8px 12px; cursor: pointer;
+  }
+  button.ghost { background: #fff; color: var(--k-primary); border: 1px solid var(--k-border); }
+  button:active { transform: translateY(1px); }
+
+  .hint { font-size: .82rem; color: var(--k-text-muted); margin-top: 12px; line-height: 1.5; }
+  .gap { color: var(--k-formalize); font-weight: 600; }
+
+  .tablecard { margin-top: 16px; }
+  .tablecard .head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .tablecard h2 { font-size: .95rem; margin: 0; color: var(--k-primary); }
+  table { width: 100%; border-collapse: collapse; font-size: .85rem; font-variant-numeric: tabular-nums; }
+  th, td { text-align: right; padding: 6px 10px; border-bottom: 1px solid var(--k-border); }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { color: var(--k-text-muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .03em; font-weight: 600; }
+  tbody tr:last-child td { background: #fff; }
+  td.spd { font-weight: 700; color: var(--k-primary); }
+  .target-row td { color: var(--k-accent); font-weight: 700; border-top: 2px solid var(--k-accent); }
+  .empty { color: var(--k-text-muted); font-size: .85rem; padding: 8px 2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>How fast are we going right now?</h1>
+  <p class="lead">
+    The curve shows distance travelled over time. <strong>P₁</strong> is fixed at an instant.
+    Drag <strong>P₂</strong> along the curve — the line through the two points is a
+    <em>secant</em>, and its slope is the <strong>average speed</strong> between them.
+    Slide P₂ toward P₁ and watch what the average speed closes in on.
+  </p>
+
+  <div class="layout">
+    <div class="card"><div id="board"></div></div>
+
+    <div>
+      <div class="readout">
+        <div class="stat avg">
+          <div class="label">Average speed (slope of secant)</div>
+          <div class="value" id="avgVal">—</div>
+          <div class="sub" id="avgSub">over the interval P₁ → P₂</div>
+        </div>
+        <div class="stat inst">
+          <div class="label">Speedometer reading at P₁</div>
+          <div class="value" id="instVal">4.0 m/s</div>
+          <div class="sub">the value we are trying to reach</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="step">Slide P₂ halfway toward P₁</button>
+        <button class="ghost" id="record">Record this interval</button>
+        <button class="ghost" id="reset">Reset</button>
+      </div>
+
+      <p class="hint" id="hint">
+        Notice the gap: the closer P₂ gets, the closer the average speed creeps to the
+        speedometer reading — but P₂ can never actually <em>land</em> on P₁, because then
+        the interval would be zero and the slope would be <span class="gap">0 ÷ 0</span>.
+      </p>
+    </div>
+  </div>
+
+  <div class="card tablecard">
+    <div class="head">
+      <h2>Watch the average speed close in</h2>
+      <button class="ghost" id="clear">Clear table</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Interval (t₁ → t₂)</th>
+          <th>Δt (s)</th>
+          <th>Δd (m)</th>
+          <th>Average speed (m/s)</th>
+        </tr>
+      </thead>
+      <tbody id="rows">
+        <tr><td class="empty" colspan="4">Slide P₂ inward or press “Record this interval” to log a row. Each smaller interval gets you closer to the speed at the instant.</td></tr>
+      </tbody>
+      <tfoot>
+        <tr class="target-row">
+          <td>at the instant t₁ = 2 s</td>
+          <td>0</td>
+          <td>0</td>
+          <td>4.00  (the target)</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+<script>
+// ---- The model -------------------------------------------------------------
+// distance d(t) = t^2  (metres).  Instantaneous speed = d'(t) = 2t.
+// At t1 = 2 s the true instantaneous speed is 4.0 m/s — the "speedometer" value.
+const d  = (t) => t * t;
+const t1 = 2;            // fixed instant (P1)
+const instSpeed = 2 * t1; // = 4.0 m/s
+
+const board = JXG.JSXGraph.initBoard('board', {
+  boundingbox: [-0.4, 11, 4.4, -1.2],
+  axis: true,
+  showCopyright: false,
+  showNavigation: false,
+  defaultAxes: {
+    x: { name: 'time (s)', withLabel: true, label: { position: 'rt', offset: [-10, 16] } },
+    y: { name: 'distance (m)', withLabel: true, label: { position: 'urt', offset: [10, -5] } }
+  }
+});
+
+// The distance–time curve
+const curve = board.create('functiongraph', [d, 0, 4], { strokeColor: '#B9A6DE', strokeWidth: 3, fixed: true });
+
+// P1: fixed point on the curve
+const P1 = board.create('point', [t1, d(t1)], {
+  name: 'P₁', size: 4, fixed: true, color: '#4B2E83',
+  label: { offset: [10, -2], fontSize: 14 }
+});
+
+// P2: a glider constrained to the curve itself, draggable by the student
+let t2start = 3.4;
+const P2 = board.create('glider', [t2start, d(t2start), curve], {
+  name: 'P₂', size: 5, color: '#00B3A4', label: { offset: [10, 8], fontSize: 14 }
+});
+
+// Secant line through P1 and P2
+board.create('line', [P1, P2], { strokeColor: '#2E6FB7', strokeWidth: 2.5, straightFirst: true, straightLast: true });
+
+// Faint tangent at P1 (the target the secant approaches)
+board.create('line',
+  [ [t1, d(t1)], [t1 + 1, d(t1) + instSpeed] ],
+  { strokeColor: '#00B3A4', strokeWidth: 1.5, dash: 2, straightFirst: true, straightLast: true });
+
+// ---- Live readout ----------------------------------------------------------
+const avgVal = document.getElementById('avgVal');
+const avgSub = document.getElementById('avgSub');
+
+function update() {
+  const t2 = P2.X();
+  const dt = t2 - t1;
+  if (Math.abs(dt) < 1e-6) {
+    avgVal.textContent = '0 ÷ 0  (undefined)';
+    avgSub.textContent = 'P₂ has reached P₁ — no interval left';
+    return;
+  }
+  const avg = (d(t2) - d(t1)) / dt;
+  avgVal.textContent = avg.toFixed(2) + ' m/s';
+  avgSub.textContent = 'interval: t = ' + t1.toFixed(2) + ' s → ' + t2.toFixed(2) + ' s';
+}
+P2.on('drag', update);
+board.on('update', update);
+update();
+
+// ---- Data table: record the shrinking intervals ----------------------------
+const rows = document.getElementById('rows');
+let hasRows = false;
+
+function recordRow(t2) {
+  const dt = t2 - t1;
+  if (Math.abs(dt) < 1e-6) return; // nothing to record at zero interval
+  const dd = d(t2) - d(t1);
+  const avg = dd / dt;
+
+  if (!hasRows) { rows.innerHTML = ''; hasRows = true; }
+  const tr = document.createElement('tr');
+  tr.innerHTML =
+    '<td>' + t1.toFixed(2) + ' s → ' + t2.toFixed(3) + ' s</td>' +
+    '<td>' + dt.toFixed(3) + '</td>' +
+    '<td>' + dd.toFixed(3) + '</td>' +
+    '<td class="spd">' + avg.toFixed(3) + '</td>';
+  rows.appendChild(tr);
+}
+
+function clearTable() {
+  rows.innerHTML = '<tr><td class="empty" colspan="4">Slide P₂ inward or press “Record this interval” to log a row. Each smaller interval gets you closer to the speed at the instant.</td></tr>';
+  hasRows = false;
+}
+
+// Move the glider P2 to a given time on the curve (gliders need setPositionDirectly,
+// not moveTo). Snapping to (x, d(x)) keeps it exactly on the distance–time curve.
+function setP2(x) {
+  P2.setPositionDirectly(JXG.COORDS_BY_USER, [x, d(x)]);
+  board.update();
+  update();
+}
+
+// ---- Buttons ---------------------------------------------------------------
+document.getElementById('step').addEventListener('click', () => {
+  const next = t1 + (P2.X() - t1) / 2; // halve the remaining gap to P1
+  setP2(next);
+  recordRow(P2.X());
+});
+document.getElementById('record').addEventListener('click', () => recordRow(P2.X()));
+document.getElementById('clear').addEventListener('click', clearTable);
+document.getElementById('reset').addEventListener('click', () => { setP2(t2start); });
+</script>
+</body>
+</html>
