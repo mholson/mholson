@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Can a curve have a steepness at a single point?</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsxgraph@1.10.1/distrib/jsxgraph.css" />
+<script src="https://cdn.jsdelivr.net/npm/jsxgraph@1.10.1/distrib/jsxgraphcore.js"></script>
+
+<style>
+  :root {
+    --k-primary:#4B2E83; --k-accent:#00B3A4; --k-stretch:#E8743B;
+    --k-formalize:#2E6FB7; --k-success:#3FA34D;
+    --k-bg:#FFFFFF; --k-surface:#F7F6FB; --k-border:#E4E1EC;
+    --k-text:#1F1B2E; --k-text-muted:#5B5670;
+    --k-radius:12px; --k-shadow:0 1px 3px rgba(31,27,46,.08), 0 4px 16px rgba(31,27,46,.06);
+    --k-font:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--k-bg); color: var(--k-text); font-family: var(--k-font); }
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 18px; }
+  .layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 16px; align-items: start; }
+  @media (max-width: 720px) { .layout { grid-template-columns: 1fr; } }
+
+  .card { background: var(--k-surface); border: 1px solid var(--k-border); border-radius: var(--k-radius); box-shadow: var(--k-shadow); padding: 14px; }
+  #board { width: 100%; height: 380px; background: #fff; border-radius: var(--k-radius); }
+
+  h1 { font-size: 1.15rem; margin: 0 0 4px; color: var(--k-primary); }
+  p.lead { margin: 0 0 14px; color: var(--k-text-muted); font-size: .92rem; line-height: 1.45; }
+
+  ol.steps { margin: 0 0 12px; padding-left: 20px; }
+  ol.steps li { font-size: .92rem; line-height: 1.5; margin-bottom: 6px; }
+  ol.steps b { color: var(--k-primary); }
+
+  .chip { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 10px; font-size: .95rem; font-weight: 600; line-height: 1.4; border: 1px solid var(--k-border); background: #fff; }
+  .chip .dot { width: 12px; height: 12px; border-radius: 50%; flex: 0 0 auto; background: var(--k-text-muted); }
+  .chip.steep { border-color: #F3C9B4; background: #FDF1EA; color: #9A4A20; }
+  .chip.steep .dot { background: var(--k-stretch); }
+  .chip.flat  { border-color: #C9D9EE; background: #EEF4FB; color: #244E80; }
+  .chip.flat .dot  { background: var(--k-formalize); }
+  .chip.skim  { border-color: #BFE3C5; background: #EDF7EE; color: #2C6E37; }
+  .chip.skim .dot  { background: var(--k-success); }
+
+  button { font-family: inherit; font-size: .85rem; font-weight: 600; color: var(--k-primary); background: #fff; border: 1px solid var(--k-border); border-radius: 8px; padding: 8px 12px; cursor: pointer; margin-top: 12px; }
+  button:active { transform: translateY(1px); }
+
+  .challenge { margin-top: 16px; border: 1px solid var(--k-border); border-left: 4px solid var(--k-accent); border-radius: 0 var(--k-radius) var(--k-radius) 0; background: var(--k-surface); padding: 16px 18px; }
+  .challenge h2 { margin: 0 0 6px; font-size: 1.05rem; color: var(--k-primary); }
+  .challenge p { margin: 0 0 10px; font-size: .95rem; line-height: 1.55; }
+  .challenge p:last-child { margin-bottom: 0; }
+  .challenge .key { color: var(--k-text-muted); font-size: .9rem; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Slope is defined between two points. So how can a curve have a steepness at a single one?</h1>
+  <p class="lead">
+    You know only <strong>one point</strong> on this curve — the purple dot. Your usual steepness tool
+    needs <em>two</em> points, so you can't use it. But you can lay a straight stick across your point
+    and tilt it. Let's see what happens.
+  </p>
+
+  <div class="layout">
+    <div class="card"><div id="board"></div></div>
+
+    <div>
+      <ol class="steps">
+        <li>Drag the teal handle to <b>tilt the orange stick</b> around your point.</li>
+        <li>Tilt until the stick <b>skims along the curve</b> — pointing the way the curve goes right at your dot, touching but not slicing through.</li>
+        <li>Watch the hollow dot: it's the <b>other place</b> your stick cuts the curve. As you skim, see where it goes.</li>
+      </ol>
+
+      <div class="chip" id="chip"><span class="dot"></span><span id="chipText">Tilt the stick to begin…</span></div>
+
+      <button id="reset">Reset the stick</button>
+    </div>
+  </div>
+
+  <div class="challenge hidden" id="challenge">
+    <h2>You found it — now here's the real puzzle.</h2>
+    <p>
+      There is exactly <strong>one</strong> straight stick that skims the curve right at your point.
+      Lay any other stick and it slices clean through; only this one <em>rests along</em> the curve,
+      touching at a single place — yours. That skimming stick <strong>is</strong> how steep the curve
+      is at that exact point.
+    </p>
+    <p>
+      But a stick is a straight line — and to measure how steep a straight line is, you have always
+      needed <strong>two</strong> points on it. Here you know only <strong>one</strong>: the place where
+      it just touches. <strong>So how could we ever find the steepness of this stick, knowing only that
+      single touching point?</strong>
+    </p>
+    <p class="key">
+      One clue you just saw: the moment your stick began to skim, the other crossing point slid in and
+      vanished into your point — two points quietly became one. Hold on to that. It is the key to the
+      whole mystery.
+    </p>
+  </div>
+</div>
+
+<script>
+// A hidden smooth curve. The student knows only ONE point on it (P).
+// f(x) = 0.2 x^2 + 1.  We never show this, or any number, to the student.
+const a = 0.2, c = 1;
+const f = (x) => a * x * x + c;
+const x0 = 3, y0 = f(x0);
+const mTarget = 2 * a * x0; // the skim steepness — used ONLY for feedback, never shown
+
+const board = JXG.JSXGraph.initBoard('board', {
+  boundingbox: [-1, 9.4, 7.6, -1.4],
+  axis: false, grid: false, showCopyright: false, showNavigation: false,
+  zoom: { wheel: false }, pan: { enabled: false }
+});
+
+// The curve (deliberately unlabelled — it is just "a curve")
+board.create('functiongraph', [f, -1, 7.2], { strokeColor: '#B9A6DE', strokeWidth: 4, fixed: true, highlight: false });
+
+// P — the one point the student knows
+const P = board.create('point', [x0, y0], {
+  name: 'your point', size: 5, fixed: true, color: '#4B2E83',
+  label: { offset: [12, -6], fontSize: 13, cssStyle: 'font-weight:600' }, showInfobox: false
+});
+
+// H — the handle the student drags to tilt the stick (starts a little too steep,
+// so the second crossing point is on-screen and slides into P as they tilt down)
+const Hstart = [x0 + 2.5, y0 + 4];
+const H = board.create('point', Hstart, {
+  name: 'drag to tilt', size: 5, color: '#00B3A4',
+  label: { offset: [12, 10], fontSize: 13, cssStyle: 'font-weight:600' }, showInfobox: false
+});
+
+// The straight "stick" through P and H
+const stick = board.create('line', [P, H], { strokeColor: '#E8743B', strokeWidth: 3, highlight: false });
+
+function slope() {
+  const dx = H.X() - P.X();
+  if (Math.abs(dx) < 1e-3) return Infinity;
+  return (H.Y() - P.Y()) / dx;
+}
+
+// The OTHER point where the stick cuts the curve (a parabola has two crossings;
+// one is always P, the other is here). It slides into P exactly when the stick skims.
+const secondX = () => { const m = slope(); return isFinite(m) ? m / a - x0 : x0; };
+const Q = board.create('point', [() => secondX(), () => f(secondX())], {
+  name: '', size: 5, strokeColor: '#E8743B', fillColor: '#FFFFFF', strokeWidth: 2,
+  fixed: true, showInfobox: false, highlight: false
+});
+const qLabel = board.create('text', [() => secondX() + 0.15, () => f(secondX()) - 0.55, 'also cuts here'],
+  { fontSize: 12, color: '#9A4A20', fixed: true, visible: false });
+
+// ---- Feedback --------------------------------------------------------------
+const chip = document.getElementById('chip');
+const chipText = document.getElementById('chipText');
+const challenge = document.getElementById('challenge');
+let solved = false;
+
+function setChip(cls, text) { chip.className = 'chip ' + cls; chipText.textContent = text; }
+
+function update() {
+  const m = slope();
+  const isSkim = isFinite(m) && Math.abs(m - mTarget) < 0.12;
+  const showQ = isFinite(m) && !isSkim; // at the skim, the second crossing has merged into P
+  Q.setAttribute({ visible: showQ });
+  qLabel.setAttribute({ visible: showQ });
+
+  if (!isFinite(m)) {
+    setChip('steep', 'That stick is standing straight up — tilt it back down toward the curve.');
+    stick.setAttribute({ strokeColor: '#E8743B' });
+    return;
+  }
+  if (isSkim) {
+    setChip('skim', 'That’s it — your stick is skimming along the curve, touching at just your one point.');
+    stick.setAttribute({ strokeColor: '#3FA34D' });
+    if (!solved) { solved = true; challenge.classList.remove('hidden'); }
+  } else if (m > mTarget) {
+    setChip('steep', 'Too steep — your stick slices up through the curve. Tilt the handle down a little.');
+    stick.setAttribute({ strokeColor: '#E8743B' });
+  } else {
+    setChip('flat', 'Too flat — the curve curls away above your stick. Tilt the handle up a little.');
+    stick.setAttribute({ strokeColor: '#E8743B' });
+  }
+}
+
+H.on('drag', update);
+board.on('update', update);
+update();
+
+document.getElementById('reset').addEventListener('click', () => {
+  H.setPositionDirectly(JXG.COORDS_BY_USER, Hstart);
+  board.update();
+  update();
+});
+</script>
+</body>
+</html>
