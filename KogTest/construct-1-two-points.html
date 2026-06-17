@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>How fast is the curve climbing between two points?</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsxgraph@1.10.1/distrib/jsxgraph.css" />
+<script src="https://cdn.jsdelivr.net/npm/jsxgraph@1.10.1/distrib/jsxgraphcore.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mathlive@0.105.0/mathlive-static.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mathlive@0.105.0/mathlive-fonts.css" />
+
+<style>
+  :root {
+    --k-primary:#4B2E83; --k-accent:#00B3A4; --k-stretch:#E8743B; --k-formalize:#2E6FB7;
+    --k-success:#3FA34D; --k-bg:#FFFFFF; --k-surface:#F7F6FB; --k-border:#E4E1EC;
+    --k-text:#1F1B2E; --k-text-muted:#5B5670;
+    --k-radius:12px; --k-shadow:0 1px 3px rgba(31,27,46,.08), 0 4px 16px rgba(31,27,46,.06);
+    --k-font:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--k-bg); color: var(--k-text); font-family: var(--k-font); }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 18px; }
+  h1 { font-size: 1.15rem; margin: 0 0 4px; color: var(--k-primary); }
+  p.lead { margin: 0 0 14px; color: var(--k-text-muted); font-size: .92rem; line-height: 1.45; }
+  .step { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--k-construct, var(--k-accent)); }
+
+  .layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 16px; align-items: start; }
+  @media (max-width: 720px) { .layout { grid-template-columns: 1fr; } }
+
+  .card { background: var(--k-surface); border: 1px solid var(--k-border); border-radius: var(--k-radius); box-shadow: var(--k-shadow); padding: 14px; }
+  #board { width: 100%; height: 380px; background: #fff; border-radius: var(--k-radius); }
+
+  .readout { background: #fff; border: 1px solid var(--k-border); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; }
+  .readout .lbl { font-size: .72rem; text-transform: uppercase; letter-spacing: .03em; color: var(--k-text-muted); margin-bottom: 6px; }
+  .readout .math { font-size: 1.3rem; }
+  .interp { font-size: .92rem; line-height: 1.5; }
+  .interp b { color: var(--k-primary); }
+
+  .inquiry { margin-top: 4px; }
+  .inquiry h2 { font-size: .9rem; margin: 0 0 6px; color: var(--k-primary); }
+  .inquiry li { font-size: .9rem; line-height: 1.5; margin-bottom: 6px; }
+  .inquiry .tag { font-weight: 700; color: var(--k-accent); }
+
+  button { font-family: inherit; font-size: .85rem; font-weight: 600; color: var(--k-primary); background: #fff; border: 1px solid var(--k-border); border-radius: 8px; padding: 8px 12px; cursor: pointer; margin-top: 4px; }
+  button:active { transform: translateY(1px); }
+
+  .predict { border: 1px solid var(--k-border); border-left: 4px solid var(--k-stretch); border-radius: 0 var(--k-radius) var(--k-radius) 0; background: var(--k-surface); padding: 12px 15px; margin-bottom: 14px; }
+  .predict .plbl { font-size: .72rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--k-stretch); margin-bottom: 4px; }
+  .predict p { margin: 0 0 8px; font-size: .92rem; line-height: 1.45; }
+  .prow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .prow .meq { font-size: 1.05rem; }
+  .presult { margin-top: 8px; font-size: .88rem; font-weight: 600; min-height: 1.1em; }
+  .presult.ok { color: var(--k-success); } .presult.no { color: var(--k-error); }
+  .presult.muted { color: var(--k-text-muted); font-weight: 400; }
+  math-field { min-width: 90px; font-size: 1.05rem; padding: 3px 7px; background: #fff; border: 2px solid var(--k-border); border-radius: 8px; }
+  math-field.right { border-color: var(--k-success); background: #F0F8F1; }
+  math-field.wrong { border-color: var(--k-error); background: #FBEDED; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="step">Construct · activity 1 of 5</span>
+  <h1>How fast is the curve climbing between two points?</h1>
+  <p class="lead">
+    Drag the two points <b>A</b> and <b>B</b> along the curve. The straight line through them shows
+    how steeply the curve climbs <em>across that stretch</em> — how much it goes up for each step across.
+  </p>
+
+  <div class="predict">
+    <div class="plbl">First, predict</div>
+    <p>Before you drag: what is the steepness between <b>x = 1</b> and <b>x = 3</b>? Lock in a guess, then drag A and B there to check.</p>
+    <div class="prow"><span class="meq" id="meq"></span><math-field id="guess"></math-field><button id="pbtn">Lock in my guess</button></div>
+    <div class="presult muted" id="presult"></div>
+  </div>
+
+  <div class="layout">
+    <div class="card"><div id="board"></div></div>
+
+    <div>
+      <div class="readout">
+        <div class="lbl">Climb across this stretch</div>
+        <div class="math" id="slopeMath">—</div>
+      </div>
+      <div class="readout">
+        <div class="interp" id="interp">Drag A and B to compare different stretches of the curve.</div>
+      </div>
+
+      <div class="inquiry">
+        <h2>Investigate</h2>
+        <ul>
+          <li><span class="tag">Notice</span> — does the climb stay the same as you move the points? A straight line has one steepness everywhere. Does this curve?</li>
+          <li><span class="tag">Predict</span> — where would you put A and B to get the <em>steepest</em> stretch? The <em>flattest</em>?</li>
+          <li><span class="tag">Wonder</span> — what would the number describe if A and B were almost on top of each other?</li>
+        </ul>
+        <button id="reset">Reset the points</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { convertLatexToMarkup } from 'https://cdn.jsdelivr.net/npm/mathlive@0.105.0/+esm';
+import { ComputeEngine } from 'https://cdn.jsdelivr.net/npm/@cortex-js/compute-engine@0.27.0/+esm';
+const tex = (s) => convertLatexToMarkup(s);
+
+// A gently curving graph. Kept unnamed — it is just "a curve that climbs".
+const f = (x) => 0.5 * x * x;
+const LO = 0, HI = 5;
+const fmt = (n) => Number.isInteger(n) ? '' + n : n.toFixed(1);
+
+const board = JXG.JSXGraph.initBoard('board', {
+  boundingbox: [-0.8, 13.6, 5.8, -1.4],
+  axis: true, showCopyright: false, showNavigation: false,
+  zoom: { wheel: false }, pan: { enabled: false },
+  defaultAxes: {
+    x: { name: 'x', withLabel: true, label: { position: 'rt', offset: [-10, 16] }, ticks: { insertTicks: false, ticksDistance: 1, minorTicks: 0 } },
+    y: { name: 'y', withLabel: true, label: { position: 'urt', offset: [8, -5] }, ticks: { insertTicks: false, ticksDistance: 2, minorTicks: 0 } }
+  }
+});
+
+board.create('functiongraph', [f, LO - 0.2, HI + 0.2], { strokeColor: '#B9A6DE', strokeWidth: 4, fixed: true, highlight: false });
+
+// Two points that ride the curve. We snap them to whole-number x for clean numbers.
+function snap(P) {
+  let x = Math.round(P.X());
+  x = Math.max(LO, Math.min(HI, x));
+  P.setPositionDirectly(JXG.COORDS_BY_USER, [x, f(x)]);
+}
+const ptOpt = { size: 6, color: '#00B3A4', label: { fontSize: 15, cssStyle: 'font-weight:700' }, showInfobox: false };
+const A = board.create('point', [1, f(1)], { ...ptOpt, name: 'A', label: { offset: [-22, -2], fontSize: 15, cssStyle: 'font-weight:700' } });
+const B = board.create('point', [4, f(4)], { ...ptOpt, name: 'B', label: { offset: [12, -2], fontSize: 15, cssStyle: 'font-weight:700' } });
+
+// The straight line through them (the "stretch" line)
+board.create('line', [A, B], { strokeColor: '#2E6FB7', strokeWidth: 2.5, highlight: false });
+
+// Rise/run triangle: run along the bottom, rise up to B
+const C = board.create('point', [() => B.X(), () => A.Y()], { visible: false, name: '', fixed: true, showInfobox: false });
+const legOpt = { dash: 2, strokeWidth: 1.5, fixed: true, highlight: false };
+board.create('segment', [A, C], { ...legOpt, strokeColor: '#E8743B' });
+board.create('segment', [C, B], { ...legOpt, strokeColor: '#2E6FB7' });
+board.create('text', [() => (A.X() + B.X()) / 2, () => A.Y() - 0.7, () => 'across ' + (B.X() - A.X())],
+  { fontSize: 12, color: '#9A4A20', anchorX: 'middle', fixed: true });
+board.create('text', [() => B.X() + 0.15, () => (A.Y() + B.Y()) / 2, () => 'up ' + fmt(f(B.X()) - f(A.X()))],
+  { fontSize: 12, color: '#244E80', anchorX: 'left', anchorY: 'middle', fixed: true });
+
+const slopeMath = document.getElementById('slopeMath');
+const interp = document.getElementById('interp');
+
+function update() {
+  const dx = B.X() - A.X();
+  const dy = f(B.X()) - f(A.X());
+  if (dx === 0) {
+    slopeMath.innerHTML = tex('\\tfrac{\\text{up}}{\\text{across}} = \\tfrac{?}{0}');
+    interp.innerHTML = 'A and B are on top of each other — slide them apart so there is a stretch to measure.';
+    return;
+  }
+  const m = dy / dx;
+  slopeMath.innerHTML = tex('\\dfrac{\\text{up}}{\\text{across}} = \\dfrac{' + fmt(dy) + '}{' + fmt(dx) + '} = ' + fmt(m));
+  interp.innerHTML = 'Across this stretch the curve climbs about <b>' + fmt(m) +
+    '</b> upward for every <b>1</b> across.';
+}
+
+function onDrag(P) { snap(P); board.update(); update(); }
+A.on('drag', () => onDrag(A));
+B.on('drag', () => onDrag(B));
+board.on('update', update);
+update();
+
+document.getElementById('reset').addEventListener('click', () => {
+  A.setPositionDirectly(JXG.COORDS_BY_USER, [1, f(1)]);
+  B.setPositionDirectly(JXG.COORDS_BY_USER, [4, f(4)]);
+  board.update(); update();
+});
+
+// ---- Predict → confirm ----
+const PREDICT_TARGET = (f(3) - f(1)) / (3 - 1);   // steepness between x = 1 and x = 3
+const ce = new ComputeEngine();
+document.getElementById('meq').innerHTML = tex('\\text{steepness} =');
+const guessField = document.getElementById('guess');
+guessField.mathVirtualKeyboardPolicy = 'manual';
+const pbtn = document.getElementById('pbtn');
+const presult = document.getElementById('presult');
+let guess = null;
+pbtn.addEventListener('click', () => {
+  if (guess === null) {
+    let v = NaN; try { v = Number(ce.parse((guessField.value || '').trim()).N().valueOf()); } catch (e) {}
+    if (!Number.isFinite(v)) { presult.className = 'presult muted'; presult.textContent = 'Type a number first.'; return; }
+    guess = v; guessField.setAttribute('read-only', ''); pbtn.textContent = 'Reveal the answer';
+    presult.className = 'presult muted'; presult.textContent = 'Guess locked in: ' + fmt(guess) + '. Now drag A to x = 1 and B to x = 3 to check.';
+  } else {
+    const ok = Math.abs(guess - PREDICT_TARGET) < 1e-9;
+    guessField.classList.add(ok ? 'right' : 'wrong');
+    presult.className = 'presult ' + (ok ? 'ok' : 'no');
+    presult.innerHTML = ok
+      ? '✓ Correct — the steepness between x = 1 and x = 3 is ' + fmt(PREDICT_TARGET) + '.'
+      : 'Good for committing — but it is actually <b>' + fmt(PREDICT_TARGET) + '</b>, not ' + fmt(guess) + '. Drag A and B to x = 1 and x = 3 and read it off.';
+  }
+});
+</script>
+</body>
+</html>

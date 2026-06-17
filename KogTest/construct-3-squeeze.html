@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Squeeze the two points together</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsxgraph@1.10.1/distrib/jsxgraph.css" />
+<script src="https://cdn.jsdelivr.net/npm/jsxgraph@1.10.1/distrib/jsxgraphcore.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mathlive@0.105.0/mathlive-static.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mathlive@0.105.0/mathlive-fonts.css" />
+
+<style>
+  :root {
+    --k-primary:#4B2E83; --k-accent:#00B3A4; --k-stretch:#E8743B; --k-formalize:#2E6FB7;
+    --k-success:#3FA34D; --k-bg:#FFFFFF; --k-surface:#F7F6FB; --k-border:#E4E1EC;
+    --k-text:#1F1B2E; --k-text-muted:#5B5670;
+    --k-radius:12px; --k-shadow:0 1px 3px rgba(31,27,46,.08), 0 4px 16px rgba(31,27,46,.06);
+    --k-font:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--k-bg); color: var(--k-text); font-family: var(--k-font); }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 18px; }
+  h1 { font-size: 1.15rem; margin: 0 0 4px; color: var(--k-primary); }
+  p.lead { margin: 0 0 14px; color: var(--k-text-muted); font-size: .92rem; line-height: 1.45; }
+  .step { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--k-accent); }
+
+  .layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 16px; align-items: start; }
+  @media (max-width: 720px) { .layout { grid-template-columns: 1fr; } }
+
+  .card { background: var(--k-surface); border: 1px solid var(--k-border); border-radius: var(--k-radius); box-shadow: var(--k-shadow); padding: 14px; }
+  #board { width: 100%; height: 380px; background: #fff; border-radius: var(--k-radius); }
+
+  .slider label { display: flex; justify-content: space-between; font-size: .85rem; font-weight: 600; margin-bottom: 4px; }
+  .slider input[type=range] { width: 100%; accent-color: var(--k-primary); }
+  .slider .val { color: var(--k-primary); font-variant-numeric: tabular-nums; }
+  .controls { display: flex; gap: 8px; margin: 10px 0 12px; }
+  button { font-family: inherit; font-size: .82rem; font-weight: 600; color: var(--k-primary); background: #fff; border: 1px solid var(--k-border); border-radius: 8px; padding: 7px 11px; cursor: pointer; }
+  button:active { transform: translateY(1px); }
+
+  .readout { background: #fff; border: 1px solid var(--k-border); border-radius: 10px; padding: 11px 13px; margin-bottom: 10px; }
+  .readout .lbl { font-size: .72rem; text-transform: uppercase; letter-spacing: .03em; color: var(--k-text-muted); margin-bottom: 5px; }
+  .readout .math { font-size: 1.2rem; }
+  .readout.target { border-color: #BFE3C5; background: #F0F8F1; }
+  .interp { font-size: .9rem; line-height: 1.5; }
+  .interp b { color: var(--k-primary); }
+
+  .predict { border: 1px solid var(--k-border); border-left: 4px solid var(--k-stretch); border-radius: 0 var(--k-radius) var(--k-radius) 0; background: var(--k-surface); padding: 12px 15px; margin-bottom: 14px; }
+  .predict .plbl { font-size: .72rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--k-stretch); margin-bottom: 4px; }
+  .predict p { margin: 0 0 8px; font-size: .92rem; line-height: 1.45; }
+  .prow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .prow .meq { font-size: 1.05rem; }
+  .presult { margin-top: 8px; font-size: .88rem; font-weight: 600; min-height: 1.1em; }
+  .presult.ok { color: var(--k-success); } .presult.no { color: var(--k-error); }
+  .presult.muted { color: var(--k-text-muted); font-weight: 400; }
+  math-field { min-width: 90px; font-size: 1.05rem; padding: 3px 7px; background: #fff; border: 2px solid var(--k-border); border-radius: 8px; }
+  math-field.right { border-color: var(--k-success); background: #F0F8F1; }
+  math-field.wrong { border-color: var(--k-error); background: #FBEDED; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="step">Construct · activity 3 of 5</span>
+  <h1>Squeeze the two points together</h1>
+  <p class="lead">
+    Point <b>P</b> is fixed. Slide point <b>Q</b> closer and closer to it. Each position gives a stretch
+    with its own steepness — watch what that number does as the gap closes to almost nothing.
+  </p>
+
+  <div class="predict">
+    <div class="plbl">First, predict</div>
+    <p>Before you close the gap: what single number do you think the steepness will settle on?</p>
+    <div class="prow"><span class="meq" id="meq"></span><math-field id="guess"></math-field><button id="pbtn">Lock in my guess</button></div>
+    <div class="presult muted" id="presult"></div>
+  </div>
+
+  <div class="layout">
+    <div class="card"><div id="board"></div></div>
+
+    <div>
+      <div class="slider"><label>gap between P and Q <span class="val" id="gapVal"></span></label><input type="range" id="gap" min="0.02" max="1.5" step="0.01" value="1.4" /></div>
+      <div class="controls">
+        <button id="half">Halve the gap</button>
+        <button id="reset">Reset</button>
+      </div>
+
+      <div class="readout"><div class="lbl">steepness across this shrinking stretch</div><div class="math" id="slopeMath"></div></div>
+      <div class="readout target"><div class="lbl">the number it is settling on</div><div class="math" id="targetMath"></div></div>
+
+      <p class="interp" id="interp"></p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { convertLatexToMarkup } from 'https://cdn.jsdelivr.net/npm/mathlive@0.105.0/+esm';
+import { ComputeEngine } from 'https://cdn.jsdelivr.net/npm/@cortex-js/compute-engine@0.27.0/+esm';
+const tex = (s) => convertLatexToMarkup(s);
+const fmt = (n) => (Math.round(n * 1000) / 1000).toString();
+
+const f = (x) => x * x;          // a curve that climbs
+const px = 2, py = f(px);        // P fixed
+const TARGET = 2 * px;           // the steepness right at P (used only for the "settling" hint)
+let gap = 1.4;
+
+const board = JXG.JSXGraph.initBoard('board', {
+  boundingbox: [-0.6, 13, 4.4, -1.6],
+  axis: true, showCopyright: false, showNavigation: false,
+  zoom: { wheel: false }, pan: { enabled: false },
+  defaultAxes: {
+    x: { name: 'x', withLabel: true, label: { position: 'rt', offset: [-12, 16] }, ticks: { insertTicks: false, ticksDistance: 1, minorTicks: 0 } },
+    y: { name: 'y', withLabel: true, label: { position: 'urt', offset: [8, -5] }, ticks: { insertTicks: false, ticksDistance: 2, minorTicks: 0 } }
+  }
+});
+
+board.create('functiongraph', [f, -0.5, 3.6], { strokeColor: '#B9A6DE', strokeWidth: 4, fixed: true, highlight: false });
+
+// faint "skim" line at P — the direction the secant is heading toward
+board.create('line', [[px, py], [px + 1, py + TARGET]], { strokeColor: '#00B3A4', strokeWidth: 1.5, dash: 2, straightFirst: true, straightLast: true, highlight: false });
+
+const P = board.create('point', [px, py], { name: 'P', size: 5, color: '#4B2E83', fixed: true, label: { offset: [-20, -4], fontSize: 14, cssStyle: 'font-weight:700' }, showInfobox: false });
+const Q = board.create('point', [() => px + gap, () => f(px + gap)], { name: 'Q', size: 5, color: '#E8743B', fixed: true, label: { offset: [12, -2], fontSize: 14, cssStyle: 'font-weight:700' }, showInfobox: false });
+board.create('line', [P, Q], { strokeColor: '#2E6FB7', strokeWidth: 2.5, highlight: false });
+
+const slopeMath = document.getElementById('slopeMath');
+const targetMath = document.getElementById('targetMath');
+const interp = document.getElementById('interp');
+const gapVal = document.getElementById('gapVal');
+const slider = document.getElementById('gap');
+
+function update() {
+  const qx = px + gap, dy = f(qx) - py;
+  const m = dy / gap;
+  gapVal.textContent = fmt(gap);
+  slopeMath.innerHTML = tex('\\dfrac{' + fmt(dy) + '}{' + fmt(gap) + '} = ' + fmt(m));
+  targetMath.innerHTML = tex('\\approx ' + fmt(TARGET));
+  const close = gap <= 0.1;
+  interp.innerHTML = close
+    ? 'The gap is almost nothing and the steepness has all but landed on <b>' + fmt(TARGET) + '</b>. That single number is the steepness of the curve <b>right at P</b> — even though it took a second point to sneak up on it.'
+    : 'As the gap shrinks, the steepness keeps easing toward <b>' + fmt(TARGET) + '</b>. Keep closing the gap and see how close it gets.';
+}
+
+slider.addEventListener('input', (e) => { gap = parseFloat(e.target.value); board.update(); update(); });
+document.getElementById('half').addEventListener('click', () => {
+  gap = Math.max(0.05, Math.round((gap / 2) * 100) / 100);
+  slider.value = gap; board.update(); update();
+});
+document.getElementById('reset').addEventListener('click', () => { gap = 1.4; slider.value = gap; board.update(); update(); });
+update();
+
+// ---- Predict → confirm ----
+const ce = new ComputeEngine();
+document.getElementById('meq').innerHTML = tex('\\text{settles on}');
+const guessField = document.getElementById('guess');
+guessField.mathVirtualKeyboardPolicy = 'manual';
+const pbtn = document.getElementById('pbtn');
+const presult = document.getElementById('presult');
+let guess = null;
+pbtn.addEventListener('click', () => {
+  if (guess === null) {
+    let v = NaN; try { v = Number(ce.parse((guessField.value || '').trim()).N().valueOf()); } catch (e) {}
+    if (!Number.isFinite(v)) { presult.className = 'presult muted'; presult.textContent = 'Type a number first.'; return; }
+    guess = v; guessField.setAttribute('read-only', ''); pbtn.textContent = 'Reveal the answer';
+    presult.className = 'presult muted'; presult.textContent = 'Guess locked in: ' + fmt(guess) + '. Now close the gap and watch.';
+  } else {
+    const ok = Math.abs(guess - TARGET) < 1e-9;
+    guessField.classList.add(ok ? 'right' : 'wrong');
+    presult.className = 'presult ' + (ok ? 'ok' : 'no');
+    presult.innerHTML = ok
+      ? '✓ Exactly — it settles right on ' + fmt(TARGET) + '.'
+      : 'Nice to commit to a guess — but watch: it actually settles on <b>' + fmt(TARGET) + '</b>, not ' + fmt(guess) + '. Close the gap and see.';
+  }
+});
+</script>
+</body>
+</html>

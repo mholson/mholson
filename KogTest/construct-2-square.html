@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>How fast does a square grow?</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsxgraph@1.10.1/distrib/jsxgraph.css" />
+<script src="https://cdn.jsdelivr.net/npm/jsxgraph@1.10.1/distrib/jsxgraphcore.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mathlive@0.105.0/mathlive-static.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mathlive@0.105.0/mathlive-fonts.css" />
+
+<style>
+  :root {
+    --k-primary:#4B2E83; --k-accent:#00B3A4; --k-stretch:#E8743B; --k-formalize:#2E6FB7;
+    --k-success:#3FA34D; --k-bg:#FFFFFF; --k-surface:#F7F6FB; --k-border:#E4E1EC;
+    --k-text:#1F1B2E; --k-text-muted:#5B5670;
+    --k-radius:12px; --k-shadow:0 1px 3px rgba(31,27,46,.08), 0 4px 16px rgba(31,27,46,.06);
+    --k-font:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--k-bg); color: var(--k-text); font-family: var(--k-font); }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 18px; }
+  h1 { font-size: 1.15rem; margin: 0 0 4px; color: var(--k-primary); }
+  p.lead { margin: 0 0 14px; color: var(--k-text-muted); font-size: .92rem; line-height: 1.45; }
+  .step { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--k-accent); }
+
+  .layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 16px; align-items: start; }
+  @media (max-width: 720px) { .layout { grid-template-columns: 1fr; } }
+
+  .card { background: var(--k-surface); border: 1px solid var(--k-border); border-radius: var(--k-radius); box-shadow: var(--k-shadow); padding: 14px; }
+  #board { width: 100%; height: 360px; background: #fff; border-radius: var(--k-radius); }
+
+  .sliders { display: grid; gap: 12px; margin-bottom: 12px; }
+  .slider label { display: flex; justify-content: space-between; font-size: .85rem; font-weight: 600; color: var(--k-text); margin-bottom: 4px; }
+  .slider input[type=range] { width: 100%; accent-color: var(--k-primary); }
+  .slider .val { color: var(--k-primary); font-variant-numeric: tabular-nums; }
+
+  .readout { background: #fff; border: 1px solid var(--k-border); border-radius: 10px; padding: 10px 13px; margin-bottom: 10px; }
+  .readout .lbl { font-size: .72rem; text-transform: uppercase; letter-spacing: .03em; color: var(--k-text-muted); margin-bottom: 5px; }
+  .readout .math { font-size: 1.12rem; }
+  .readout.rate { border-color: #BFE3C5; background: #F0F8F1; }
+  .readout.rate .math { font-size: 1.25rem; }
+
+  .swatch { display: inline-block; width: 11px; height: 11px; border-radius: 2px; vertical-align: baseline; margin-right: 2px; }
+  .legend { font-size: .8rem; color: var(--k-text-muted); line-height: 1.7; margin-bottom: 10px; }
+  .inquiry { font-size: .9rem; line-height: 1.5; color: var(--k-text); }
+  .inquiry .tag { font-weight: 700; color: var(--k-accent); }
+
+  button { font-family: inherit; font-size: .82rem; font-weight: 600; color: var(--k-primary); background: #fff; border: 1px solid var(--k-border); border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+  button:active { transform: translateY(1px); }
+  .predict { border: 1px solid var(--k-border); border-left: 4px solid var(--k-stretch); border-radius: 0 var(--k-radius) var(--k-radius) 0; background: var(--k-surface); padding: 12px 15px; margin-bottom: 14px; }
+  .predict .plbl { font-size: .72rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--k-stretch); margin-bottom: 4px; }
+  .predict p { margin: 0 0 8px; font-size: .92rem; line-height: 1.45; }
+  .prow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .prow .meq { font-size: 1.05rem; }
+  .presult { margin-top: 8px; font-size: .88rem; font-weight: 600; min-height: 1.1em; }
+  .presult.ok { color: var(--k-success); } .presult.no { color: var(--k-error); }
+  .presult.muted { color: var(--k-text-muted); font-weight: 400; }
+  math-field { min-width: 90px; font-size: 1.05rem; padding: 3px 7px; background: #fff; border: 2px solid var(--k-border); border-radius: 8px; }
+  math-field.right { border-color: var(--k-success); background: #F0F8F1; }
+  math-field.wrong { border-color: var(--k-error); background: #FBEDED; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="step">Construct · activity 2 of 5</span>
+  <h1>How fast does a square grow?</h1>
+  <p class="lead">
+    A square has side <b>s</b>. Make the side a little bigger — by an amount <b>Δs</b> — and its area grows.
+    But by how much, <em>for each bit of extra side</em>? Watch where the new area appears.
+  </p>
+
+  <div class="predict">
+    <div class="plbl">First, predict</div>
+    <p>Keep <b>s = 2</b>. As the extra side <b>Δs</b> shrinks to almost nothing, what number do you think the growth-per-bit settles on?</p>
+    <div class="prow"><span class="meq" id="meq"></span><math-field id="guess"></math-field><button id="pbtn">Lock in my guess</button></div>
+    <div class="presult muted" id="presult"></div>
+  </div>
+
+  <div class="layout">
+    <div class="card"><div id="board"></div></div>
+
+    <div>
+      <div class="sliders">
+        <div class="slider"><label>side <span class="val">s = <span id="sVal"></span></span></label><input type="range" id="s" min="1" max="4" step="0.05" value="2" /></div>
+        <div class="slider"><label>extra side <span class="val">Δs = <span id="dVal"></span></span></label><input type="range" id="d" min="0.1" max="2" step="0.05" value="1" /></div>
+      </div>
+
+      <div class="legend">
+        <span class="swatch" style="background:#D9CCEF"></span> the square you started with &nbsp;
+        <span class="swatch" style="background:#9FE0DA"></span> two new strips &nbsp;
+        <span class="swatch" style="background:#F2B79A"></span> the little corner
+      </div>
+
+      <div class="readout"><div class="lbl">extra area = two strips + corner</div><div class="math" id="addMath"></div></div>
+      <div class="readout rate"><div class="lbl">growth per bit of extra side = extra area ÷ Δs</div><div class="math" id="rateMath"></div></div>
+
+      <p class="inquiry" id="inquiry"></p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { convertLatexToMarkup } from 'https://cdn.jsdelivr.net/npm/mathlive@0.105.0/+esm';
+import { ComputeEngine } from 'https://cdn.jsdelivr.net/npm/@cortex-js/compute-engine@0.27.0/+esm';
+const tex = (s) => convertLatexToMarkup(s);
+const fmt = (n) => { const r = Math.round(n * 100) / 100; return Number.isInteger(r) ? '' + r : '' + r; };
+
+let s = 2, ds = 1;
+
+const board = JXG.JSXGraph.initBoard('board', {
+  boundingbox: [-1, 7, 7, -1], keepAspectRatio: true,
+  axis: false, showCopyright: false, showNavigation: false,
+  zoom: { wheel: false }, pan: { enabled: false }
+});
+
+const pt = (xf, yf) => board.create('point', [xf, yf], { visible: false, fixed: true, name: '', showInfobox: false });
+const o = pt(0, 0), bx = pt(() => s, 0), by = pt(0, () => s), bb = pt(() => s, () => s);
+const rx = pt(() => s + ds, 0), rt = pt(() => s + ds, () => s);
+const ty = pt(0, () => s + ds), tt = pt(() => s, () => s + ds);
+const cc = pt(() => s + ds, () => s + ds);
+
+const poly = (pts, fill) => board.create('polygon', pts, {
+  fillColor: fill, fillOpacity: 0.55, vertices: { visible: false }, borders: { strokeColor: '#FFFFFF', strokeWidth: 1.5 },
+  fixed: true, highlight: false, hasInnerPoints: false
+});
+poly([o, bx, bb, by], '#7E5BB8');        // base square
+poly([bx, rx, rt, bb], '#00B3A4');        // right strip
+poly([by, bb, tt, ty], '#00B3A4');        // top strip
+poly([bb, rt, cc, tt], '#E8743B');        // corner
+
+// side labels
+board.create('text', [() => s / 2, -0.45, () => 's = ' + fmt(s)], { fontSize: 13, anchorX: 'middle', color: '#4B2E83', fixed: true, cssStyle: 'font-weight:600' });
+board.create('text', [() => s + ds / 2, -0.45, () => 'Δs'], { fontSize: 12, anchorX: 'middle', color: '#9A4A20', fixed: true });
+board.create('text', [() => s / 2, () => s / 2, () => 's²'], { fontSize: 15, anchorX: 'middle', anchorY: 'middle', color: '#FFFFFF', fixed: true });
+
+const addMath = document.getElementById('addMath');
+const rateMath = document.getElementById('rateMath');
+const inquiry = document.getElementById('inquiry');
+const sVal = document.getElementById('sVal'), dVal = document.getElementById('dVal');
+
+function update() {
+  sVal.textContent = fmt(s); dVal.textContent = fmt(ds);
+  const E = s + ds, M = 0.9;            // frame the whole figure with a margin → centred + large
+  board.setBoundingBox([-M, E + M, E + M, -M], false);
+  const strips = 2 * s * ds, corner = ds * ds, added = strips + corner;
+  const rate = added / ds; // = 2s + ds
+  addMath.innerHTML = tex('2(' + fmt(s) + ')(' + fmt(ds) + ') + (' + fmt(ds) + ')^2 = ' + fmt(strips) + ' + ' + fmt(corner) + ' = ' + fmt(added));
+  rateMath.innerHTML = tex('\\dfrac{' + fmt(added) + '}{' + fmt(ds) + '} = 2s + \\Delta s = ' + fmt(2 * s) + ' + ' + fmt(ds) + ' = ' + fmt(rate));
+  inquiry.innerHTML = '<span class="tag">Notice</span> — the orange corner is the only thing pushing the growth above <b>' +
+    fmt(2 * s) + '</b> (that is 2s). Drag <b>Δs</b> smaller: the corner shrinks away and the growth heads straight for <b>' + fmt(2 * s) + '</b>.';
+  board.update();
+}
+
+document.getElementById('s').addEventListener('input', (e) => { s = parseFloat(e.target.value); board.update(); update(); });
+document.getElementById('d').addEventListener('input', (e) => { ds = parseFloat(e.target.value); board.update(); update(); });
+update();
+
+// ---- Predict → confirm ----
+const PREDICT_TARGET = 4;   // 2s at s = 2
+const ce = new ComputeEngine();
+document.getElementById('meq').innerHTML = tex('\\text{growth} \\to');
+const guessField = document.getElementById('guess');
+guessField.mathVirtualKeyboardPolicy = 'manual';
+const pbtn = document.getElementById('pbtn');
+const presult = document.getElementById('presult');
+let guess = null;
+pbtn.addEventListener('click', () => {
+  if (guess === null) {
+    let v = NaN; try { v = Number(ce.parse((guessField.value || '').trim()).N().valueOf()); } catch (e) {}
+    if (!Number.isFinite(v)) { presult.className = 'presult muted'; presult.textContent = 'Type a number first.'; return; }
+    guess = v; guessField.setAttribute('read-only', ''); pbtn.textContent = 'Reveal the answer';
+    presult.className = 'presult muted'; presult.textContent = 'Guess locked in: ' + fmt(guess) + '. Set s = 2, then drag Δs toward 0.';
+  } else {
+    const ok = Math.abs(guess - PREDICT_TARGET) < 1e-9;
+    guessField.classList.add(ok ? 'right' : 'wrong');
+    presult.className = 'presult ' + (ok ? 'ok' : 'no');
+    presult.innerHTML = ok
+      ? '✓ Yes — at s = 2 the growth settles on 2s = ' + PREDICT_TARGET + '.'
+      : 'Good to commit — but at s = 2 the growth settles on 2s = <b>' + PREDICT_TARGET + '</b>, not ' + fmt(guess) + '. Shrink Δs and watch.';
+  }
+});
+</script>
+</body>
+</html>

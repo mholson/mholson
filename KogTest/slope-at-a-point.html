@@ -169,62 +169,63 @@ const chipText = document.getElementById('chipText');
 const challenge = document.getElementById('challenge');
 const curVal = document.getElementById('curVal');
 const curBox = document.getElementById('curBox');
-let revealed = false, locked = false;
+let revealed = false;
+const SNAP = 0.16; // how wide the magnetic "catch" around the skim is
 
 function setChip(cls, text) { chip.className = 'chip ' + cls; chipText.textContent = text; }
 const fmt = (m) => isFinite(m) ? m.toFixed(2) : '—';
 
-// Snap the stick exactly onto the skim and freeze it — there is only ONE answer.
-function lockIn() {
-  locked = true;
-  const hx = x0 + 2.5;
-  H.setPositionDirectly(JXG.COORDS_BY_USER, [hx, y0 + mTarget * (hx - x0)]);
-  H.setAttribute({ fixed: true, color: '#3FA34D' });
+function skimOn() {
   stick.setAttribute({ strokeColor: '#3FA34D', strokeWidth: 4 });
+  H.setAttribute({ color: '#3FA34D' });
   Q.setAttribute({ visible: false });
   qLabel.setAttribute({ visible: false });
-  board.update();
-  setChip('skim', 'Locked in — there is exactly one stick that skims your point, and this is it.');
   curVal.textContent = mTarget.toFixed(2);
   curBox.classList.add('matched');
+  setChip('skim', 'Skimming — the stick has clicked onto the curve, touching at just your one point. Drag away to release it.');
   if (!revealed) { revealed = true; challenge.classList.remove('hidden'); }
 }
-
-function update() {
-  if (locked) return;
-  const m = slope();
-  curVal.textContent = fmt(m);
-  const isSkim = isFinite(m) && Math.abs(m - mTarget) < 0.12;
-  const showQ = isFinite(m) && !isSkim; // at the skim, the second crossing has merged into P
-  Q.setAttribute({ visible: showQ });
-  qLabel.setAttribute({ visible: showQ });
-
-  if (!isFinite(m)) {
-    setChip('steep', 'That stick is standing straight up — tilt it back down toward the curve.');
-    stick.setAttribute({ strokeColor: '#E8743B' });
-  } else if (isSkim) {
-    lockIn();
-  } else if (m > mTarget) {
-    setChip('steep', 'Too steep — your stick slices up through the curve. Tilt the handle down a little.');
-    stick.setAttribute({ strokeColor: '#E8743B' });
-  } else {
-    setChip('flat', 'Too flat — the curve curls away above your stick. Tilt the handle up a little.');
-    stick.setAttribute({ strokeColor: '#E8743B' });
-  }
+function skimOff() {
+  stick.setAttribute({ strokeColor: '#E8743B', strokeWidth: 3 });
+  H.setAttribute({ color: '#00B3A4' });
+  curBox.classList.remove('matched');
 }
 
-H.on('drag', update);
-board.on('update', update);
-update();
+// Magnetic detent: when the tilt lands inside the catch, snap the stick exactly
+// onto the skim — but the handle stays grabbable, so dragging away releases it.
+let busy = false;
+function apply() {
+  if (busy) return;
+  busy = true;
+  const dx = H.X() - P.X();
+  if (Math.abs(dx) < 1e-3) {
+    skimOff();
+    curVal.textContent = '—';
+    Q.setAttribute({ visible: false }); qLabel.setAttribute({ visible: false });
+    setChip('steep', 'That stick is standing straight up — tilt it back down toward the curve.');
+  } else {
+    const raw = (H.Y() - P.Y()) / dx;
+    if (Math.abs(raw - mTarget) < SNAP) {
+      H.setPositionDirectly(JXG.COORDS_BY_USER, [H.X(), P.Y() + mTarget * dx]); // snap onto skim
+      skimOn();
+    } else {
+      skimOff();
+      curVal.textContent = fmt(raw);
+      Q.setAttribute({ visible: true }); qLabel.setAttribute({ visible: true });
+      if (raw > mTarget) setChip('steep', 'Too steep — your stick slices up through the curve. Tilt the handle down a little.');
+      else setChip('flat', 'Too flat — the curve curls away above your stick. Tilt the handle up a little.');
+    }
+  }
+  board.update();
+  busy = false;
+}
+
+H.on('drag', apply);
+apply();
 
 document.getElementById('reset').addEventListener('click', () => {
-  locked = false;
-  H.setAttribute({ fixed: false, color: '#00B3A4' });
-  stick.setAttribute({ strokeWidth: 3 });
-  curBox.classList.remove('matched');
   H.setPositionDirectly(JXG.COORDS_BY_USER, Hstart);
-  board.update();
-  update();
+  apply();
 });
 </script>
 </body>
