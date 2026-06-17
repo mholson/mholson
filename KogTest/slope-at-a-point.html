@@ -42,6 +42,14 @@
   .chip.skim  { border-color: #BFE3C5; background: #EDF7EE; color: #2C6E37; }
   .chip.skim .dot  { background: var(--k-success); }
 
+  .gauge { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .gauge > div { background: #fff; border: 1px solid var(--k-border); border-radius: 10px; padding: 8px 11px; }
+  .gauge .lbl { font-size: .7rem; text-transform: uppercase; letter-spacing: .03em; color: var(--k-text-muted); line-height: 1.3; }
+  .gauge .val { font-size: 1.4rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .gauge .goal .val { color: var(--k-success); }
+  .gauge .cur .val  { color: var(--k-primary); }
+  .gauge .cur.matched .val { color: var(--k-success); }
+
   button { font-family: inherit; font-size: .85rem; font-weight: 600; color: var(--k-primary); background: #fff; border: 1px solid var(--k-border); border-radius: 8px; padding: 8px 12px; cursor: pointer; margin-top: 12px; }
   button:active { transform: translateY(1px); }
 
@@ -69,33 +77,38 @@
       <ol class="steps">
         <li>Drag the teal handle to <b>tilt the orange stick</b> around your point.</li>
         <li>Tilt until the stick <b>skims along the curve</b> — pointing the way the curve goes right at your dot, touching but not slicing through.</li>
-        <li>Watch the hollow dot: it's the <b>other place</b> your stick cuts the curve. As you skim, see where it goes.</li>
+        <li>Watch the hollow dot: it's the <b>other place</b> your stick cuts the curve. As you skim, it slides into your point — and the stick <b>snaps into place</b>.</li>
       </ol>
+
+      <div class="gauge">
+        <div class="goal"><div class="lbl">Goal — steepness right at your point</div><div class="val">1.20</div></div>
+        <div class="cur" id="curBox"><div class="lbl">Your stick’s steepness now</div><div class="val" id="curVal">—</div></div>
+      </div>
 
       <div class="chip" id="chip"><span class="dot"></span><span id="chipText">Tilt the stick to begin…</span></div>
 
-      <button id="reset">Reset the stick</button>
+      <button id="reset">Reset the stick to try again</button>
     </div>
   </div>
 
   <div class="challenge hidden" id="challenge">
-    <h2>You found it — now here's the real puzzle.</h2>
+    <h2>You locked it in — now here's the real puzzle.</h2>
     <p>
-      There is exactly <strong>one</strong> straight stick that skims the curve right at your point.
-      Lay any other stick and it slices clean through; only this one <em>rests along</em> the curve,
-      touching at a single place — yours. That skimming stick <strong>is</strong> how steep the curve
-      is at that exact point.
+      There is exactly <strong>one</strong> stick that skims the curve at your point — you just felt it
+      click into place. Every other tilt slices through; only this one <em>rests along</em> the curve,
+      touching at a single spot. Its steepness is <strong>1.20</strong>, and that <em>is</em> the
+      steepness of the curve right at your point.
     </p>
     <p>
-      But a stick is a straight line — and to measure how steep a straight line is, you have always
-      needed <strong>two</strong> points on it. Here you know only <strong>one</strong>: the place where
-      it just touches. <strong>So how could we ever find the steepness of this stick, knowing only that
-      single touching point?</strong>
+      But look at how you read every steepness number: by using your point <em>and</em> the other place
+      the stick crossed the curve — <strong>two</strong> points. As you tilted toward the skim, that
+      second crossing slid in and merged with your point. At the skim there is only <strong>one</strong>
+      point left.
     </p>
-    <p class="key">
-      One clue you just saw: the moment your stick began to skim, the other crossing point slid in and
-      vanished into your point — two points quietly became one. Hold on to that. It is the key to the
-      whole mystery.
+    <p>
+      So the curve clearly has a steepness of <strong>1.20</strong> right there — yet with a single point,
+      the two-point rule has nothing to work with. <strong>How can we find this steepness from just one
+      point?</strong> That is the mystery waiting for you.
     </p>
   </div>
 </div>
@@ -154,12 +167,33 @@ const qLabel = board.create('text', [() => secondX() + 0.15, () => f(secondX()) 
 const chip = document.getElementById('chip');
 const chipText = document.getElementById('chipText');
 const challenge = document.getElementById('challenge');
-let solved = false;
+const curVal = document.getElementById('curVal');
+const curBox = document.getElementById('curBox');
+let revealed = false, locked = false;
 
 function setChip(cls, text) { chip.className = 'chip ' + cls; chipText.textContent = text; }
+const fmt = (m) => isFinite(m) ? m.toFixed(2) : '—';
+
+// Snap the stick exactly onto the skim and freeze it — there is only ONE answer.
+function lockIn() {
+  locked = true;
+  const hx = x0 + 2.5;
+  H.setPositionDirectly(JXG.COORDS_BY_USER, [hx, y0 + mTarget * (hx - x0)]);
+  H.setAttribute({ fixed: true, color: '#3FA34D' });
+  stick.setAttribute({ strokeColor: '#3FA34D', strokeWidth: 4 });
+  Q.setAttribute({ visible: false });
+  qLabel.setAttribute({ visible: false });
+  board.update();
+  setChip('skim', 'Locked in — there is exactly one stick that skims your point, and this is it.');
+  curVal.textContent = mTarget.toFixed(2);
+  curBox.classList.add('matched');
+  if (!revealed) { revealed = true; challenge.classList.remove('hidden'); }
+}
 
 function update() {
+  if (locked) return;
   const m = slope();
+  curVal.textContent = fmt(m);
   const isSkim = isFinite(m) && Math.abs(m - mTarget) < 0.12;
   const showQ = isFinite(m) && !isSkim; // at the skim, the second crossing has merged into P
   Q.setAttribute({ visible: showQ });
@@ -168,12 +202,8 @@ function update() {
   if (!isFinite(m)) {
     setChip('steep', 'That stick is standing straight up — tilt it back down toward the curve.');
     stick.setAttribute({ strokeColor: '#E8743B' });
-    return;
-  }
-  if (isSkim) {
-    setChip('skim', 'That’s it — your stick is skimming along the curve, touching at just your one point.');
-    stick.setAttribute({ strokeColor: '#3FA34D' });
-    if (!solved) { solved = true; challenge.classList.remove('hidden'); }
+  } else if (isSkim) {
+    lockIn();
   } else if (m > mTarget) {
     setChip('steep', 'Too steep — your stick slices up through the curve. Tilt the handle down a little.');
     stick.setAttribute({ strokeColor: '#E8743B' });
@@ -188,6 +218,10 @@ board.on('update', update);
 update();
 
 document.getElementById('reset').addEventListener('click', () => {
+  locked = false;
+  H.setAttribute({ fixed: false, color: '#00B3A4' });
+  stick.setAttribute({ strokeWidth: 3 });
+  curBox.classList.remove('matched');
   H.setPositionDirectly(JXG.COORDS_BY_USER, Hstart);
   board.update();
   update();
