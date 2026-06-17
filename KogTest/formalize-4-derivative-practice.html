@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Differentiation practice</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mathlive@0.105.0/mathlive-static.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mathlive@0.105.0/mathlive-fonts.css" />
+<style>
+  :root {
+    --k-primary:#4B2E83; --k-accent:#00B3A4; --k-stretch:#E8743B; --k-formalize:#2E6FB7;
+    --k-success:#3FA34D; --k-error:#D14343; --k-bg:#FFFFFF; --k-surface:#F7F6FB; --k-border:#E4E1EC;
+    --k-text:#1F1B2E; --k-text-muted:#5B5670;
+    --k-radius:12px; --k-shadow:0 1px 3px rgba(31,27,46,.08), 0 4px 16px rgba(31,27,46,.06);
+    --k-font:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--k-bg); color: var(--k-text); font-family: var(--k-font); }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 18px; }
+  h1 { font-size: 1.2rem; margin: 0 0 4px; color: var(--k-formalize); }
+  .step { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--k-formalize); }
+  p.lead { margin: 0 0 14px; color: var(--k-text-muted); font-size: .92rem; line-height: 1.45; }
+  .card { background: var(--k-surface); border: 1px solid var(--k-border); border-radius: var(--k-radius); box-shadow: var(--k-shadow); padding: 14px 16px; margin-bottom: 14px; }
+
+  .seedbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .seedbar label { font-size: .9rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+  .seedbar input { width: 90px; font: inherit; padding: 6px 8px; border: 1px solid var(--k-border); border-radius: 8px; }
+  .seedhint { flex: 1 1 100%; font-size: .8rem; color: var(--k-text-muted); }
+  button { font-family: inherit; font-size: .85rem; font-weight: 600; color: #fff; background: var(--k-formalize); border: none; border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+  button.ghost { background: #fff; color: var(--k-formalize); border: 1px solid var(--k-border); }
+  button:active { transform: translateY(1px); }
+
+  .prob .phead { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+  .prob .pnum { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: var(--k-formalize); color: #fff; font-weight: 700; font-size: .85rem; flex: 0 0 auto; }
+  .prob .ptag { font-size: .78rem; color: var(--k-text-muted); text-transform: uppercase; letter-spacing: .03em; }
+  .prob .pstate { font-size: .98rem; line-height: 1.5; margin-bottom: 12px; }
+  .answer-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .answer-row .meq { font-size: 1.05rem; }
+  math-field { min-width: 150px; font-size: 1.12rem; padding: 4px 8px; background: #fff; border: 2px solid var(--k-border); border-radius: 8px; }
+  math-field.right { border-color: var(--k-success); background: #F0F8F1; }
+  math-field.wrong { border-color: var(--k-error); background: #FBEDED; }
+  .result { margin-top: 10px; font-size: .9rem; font-weight: 600; min-height: 1.2em; }
+  .result.ok { color: var(--k-success); } .result.no { color: var(--k-error); } .result.neutral { color: var(--k-text-muted); font-weight: 400; }
+  details.sol { margin-top: 12px; }
+  details.sol summary { cursor: pointer; font-size: .86rem; font-weight: 600; color: var(--k-formalize); list-style: none; display: inline-flex; align-items: center; gap: 6px; padding: 6px 0; }
+  details.sol summary::-webkit-details-marker { display: none; }
+  details.sol summary::before { content: "▸"; } details.sol[open] summary::before { content: "▾"; }
+  .solbody { margin-top: 8px; padding: 12px 14px; background: #fff; border: 1px solid var(--k-border); border-radius: 8px; }
+  .solbody .line { font-size: 1.05rem; margin: 4px 0; }
+  #loading { color: var(--k-text-muted); font-size: .9rem; padding: 8px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="step">Formalize · practice</span>
+  <h1>Differentiation practice</h1>
+  <p class="lead">
+    Differentiate each function using the power rule (type <code>^</code> for a power, e.g. <code>6x^2</code>),
+    or give the gradient value when asked. Press <strong>Check</strong>; open <strong>Show full solution</strong> if stuck.
+    Equivalent forms are accepted.
+  </p>
+
+  <div class="seedbar card">
+    <label>Seed <input type="number" id="seed" value="1" min="0" step="1" /></label>
+    <button id="gen">New problems</button>
+    <button id="rand" class="ghost">Random seed</button>
+    <span class="seedhint">Same seed → the same set every time (share it). A random seed makes a fresh set.</span>
+  </div>
+
+  <div id="loading">Loading the maths tools…</div>
+  <div id="problems"></div>
+</div>
+
+<script type="module">
+import { convertLatexToMarkup, MathfieldElement } from 'https://cdn.jsdelivr.net/npm/mathlive@0.105.0/+esm';
+import { ComputeEngine } from 'https://cdn.jsdelivr.net/npm/@cortex-js/compute-engine@0.27.0/+esm';
+const ce = new ComputeEngine();
+const tex = (s) => convertLatexToMarkup(s);
+
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const randInt = (a, b, rng) => a + Math.floor(rng() * (b - a + 1));
+
+// ---- polynomial helpers (terms = [[coef, power], ...]) ----
+function termLatex(coef, p, first) {
+  const sign = coef < 0 ? '- ' : (first ? '' : '+ ');
+  const c = Math.abs(coef);
+  let body;
+  if (p === 0) body = '' + c;
+  else if (p === 1) body = (c === 1 ? '' : c) + 'x';
+  else body = (c === 1 ? '' : c) + 'x^{' + p + '}';
+  return sign + body;
+}
+function polyLatex(terms) {
+  const t = terms.filter(([c]) => c !== 0);
+  if (!t.length) return '0';
+  return t.map(([c, p], i) => termLatex(c, p, i === 0)).join(' ');
+}
+const derivTerms = (terms) => terms.map(([c, p]) => [c * p, p - 1]).filter(([c, p]) => p >= 0 && c !== 0);
+const polyFn = (terms) => (x) => terms.reduce((s, [c, p]) => s + c * Math.pow(x, p), 0);
+
+// ---- problem generators ----
+function makeExpr(terms, tag) {
+  const d = derivTerms(terms);
+  return {
+    type: 'expr', tag,
+    stmt: 'Differentiate ' + tex('y = ' + polyLatex(terms)) + '.',
+    fn: polyFn(d),
+    sol: ['y = ' + polyLatex(terms), '\\dfrac{dy}{dx} = ' + polyLatex(d)]
+  };
+}
+function makeNum(terms, p, tag) {
+  const d = derivTerms(terms), df = polyFn(d), val = df(p);
+  return {
+    type: 'num', tag, val,
+    stmt: 'Find the gradient of ' + tex('y = ' + polyLatex(terms)) + ' at ' + tex('x = ' + p) + '.',
+    sol: ["f'(x) = " + polyLatex(d), "f'(" + p + ') = ' + Math.round(val)]
+  };
+}
+
+const GENS = [
+  (r) => makeExpr([[randInt(2, 5, r), randInt(2, 4, r)]], 'power rule'),
+  (r) => makeExpr([[1, randInt(2, 4, r)], [randInt(2, 6, r), 1]], 'power rule, two terms'),
+  (r) => makeExpr([[randInt(2, 4, r), 3], [randInt(2, 5, r), 2], [randInt(2, 6, r), 1], [randInt(1, 9, r), 0]], 'polynomial'),
+  (r) => { const t = [[randInt(2, 4, r), 2], [randInt(2, 6, r), 1], [randInt(1, 9, r), 0]]; return makeNum(t, randInt(1, 3, r), 'gradient at a point'); },
+  (r) => { const t = [[randInt(2, 3, r), 3], [randInt(2, 5, r), 1], [randInt(1, 9, r), 0]]; return makeNum(t, randInt(1, 3, r), 'gradient at a point'); },
+  (r) => makeExpr([[randInt(2, 5, r), 2], [randInt(2, 7, r), 1], [randInt(1, 9, r), 0]], 'everything together')
+];
+
+// ---- checking ----
+function numericAt(latex, xv) { ce.assign('x', xv); return Number(ce.parse(latex).N().valueOf()); }
+function exprMatches(latex, fn) {
+  const pts = [0.37, 1.3, -1.1, 2.6, -2.2];
+  try { for (const t of pts) { const v = numericAt(latex, t); if (!Number.isFinite(v) || Math.abs(v - fn(t)) > 1e-6) return false; } return true; } catch (e) { return false; }
+}
+function numMatches(latex, val) { try { const v = Number(ce.parse(latex).N().valueOf()); return Number.isFinite(v) && Math.abs(v - val) < 1e-6; } catch (e) { return false; } }
+
+function buildCard(i, d) {
+  const card = document.createElement('div'); card.className = 'card prob';
+  const head = document.createElement('div'); head.className = 'phead';
+  head.innerHTML = '<span class="pnum">' + (i + 1) + '</span><span class="ptag">' + d.tag + '</span>';
+  card.appendChild(head);
+  const state = document.createElement('div'); state.className = 'pstate'; state.innerHTML = d.stmt; card.appendChild(state);
+
+  const row = document.createElement('div'); row.className = 'answer-row';
+  const meq = document.createElement('span'); meq.className = 'meq';
+  meq.innerHTML = tex(d.type === 'expr' ? '\\dfrac{dy}{dx} =' : '\\text{gradient} =');
+  const mf = new MathfieldElement(); mf.mathVirtualKeyboardPolicy = 'manual'; mf.setAttribute('aria-label', 'answer ' + (i + 1));
+  const btn = document.createElement('button'); btn.textContent = 'Check';
+  row.appendChild(meq); row.appendChild(mf); row.appendChild(btn); card.appendChild(row);
+
+  const result = document.createElement('div'); result.className = 'result neutral'; result.textContent = 'Type your answer, then check.'; card.appendChild(result);
+
+  const details = document.createElement('details'); details.className = 'sol';
+  const summary = document.createElement('summary'); summary.textContent = 'Show full solution'; details.appendChild(summary);
+  const body = document.createElement('div'); body.className = 'solbody';
+  body.innerHTML = d.sol.map(l => '<div class="line">' + tex(l) + '</div>').join('') +
+    '<div class="line" style="font-size:.82rem;color:var(--k-text-muted);margin-top:8px;">Power rule: bring the power down as a multiplier, then reduce the power by one.</div>';
+  details.appendChild(body); card.appendChild(details);
+
+  function check() {
+    const latex = (mf.value || '').trim();
+    if (!latex) { result.className = 'result neutral'; result.textContent = 'Type your answer, then check.'; mf.classList.remove('right', 'wrong'); return; }
+    const ok = d.type === 'expr' ? exprMatches(latex, d.fn) : numMatches(latex, d.val);
+    if (ok) { result.className = 'result ok'; result.innerHTML = tex('\\checkmark') + ' Correct — nicely done.'; mf.classList.remove('wrong'); mf.classList.add('right'); }
+    else { result.className = 'result no'; result.textContent = 'Not quite — check your working and try again.'; mf.classList.remove('right'); mf.classList.add('wrong'); }
+  }
+  btn.addEventListener('click', check);
+  mf.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); check(); } });
+  return card;
+}
+
+function render(seed) {
+  const rng = mulberry32(seed >>> 0);
+  const host = document.getElementById('problems'); host.innerHTML = '';
+  for (let i = 0; i < GENS.length; i++) host.appendChild(buildCard(i, GENS[i](rng)));
+}
+
+document.getElementById('loading').remove();
+const seedInput = document.getElementById('seed');
+document.getElementById('gen').addEventListener('click', () => render(parseInt(seedInput.value || '0', 10)));
+document.getElementById('rand').addEventListener('click', () => { const s = Math.floor(Math.random() * 100000); seedInput.value = s; render(s); });
+render(parseInt(seedInput.value || '1', 10));
+</script>
+</body>
+</html>
