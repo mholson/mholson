@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Slope practice — lines through two points</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mathlive@0.105.0/mathlive-static.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mathlive@0.105.0/mathlive-fonts.css" />
+<style>
+  :root {
+    --k-primary:#4B2E83; --k-accent:#00B3A4; --k-stretch:#E8743B;
+    --k-success:#3FA34D; --k-error:#D14343;
+    --k-bg:#FFFFFF; --k-surface:#F7F6FB; --k-border:#E4E1EC;
+    --k-text:#1F1B2E; --k-text-muted:#5B5670;
+    --k-radius:12px; --k-shadow:0 1px 3px rgba(31,27,46,.08), 0 4px 16px rgba(31,27,46,.06);
+    --k-font:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--k-bg); color: var(--k-text); font-family: var(--k-font); }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 18px; }
+  h1 { font-size: 1.2rem; margin: 0 0 4px; color: var(--k-primary); }
+  p.lead { margin: 0 0 14px; color: var(--k-text-muted); font-size: .92rem; line-height: 1.45; }
+
+  .card { background: var(--k-surface); border: 1px solid var(--k-border); border-radius: var(--k-radius); box-shadow: var(--k-shadow); padding: 14px 16px; margin-bottom: 14px; }
+
+  .seedbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .seedbar label { font-size: .9rem; font-weight: 600; color: var(--k-text); display: inline-flex; align-items: center; gap: 6px; }
+  .seedbar input { width: 90px; font: inherit; padding: 6px 8px; border: 1px solid var(--k-border); border-radius: 8px; }
+  .seedhint { flex: 1 1 100%; font-size: .8rem; color: var(--k-text-muted); }
+
+  button { font-family: inherit; font-size: .85rem; font-weight: 600; color: #fff; background: var(--k-primary); border: none; border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+  button.ghost { background: #fff; color: var(--k-primary); border: 1px solid var(--k-border); }
+  button:active { transform: translateY(1px); }
+
+  .prob .phead { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+  .prob .pnum { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: var(--k-stretch); color: #fff; font-weight: 700; font-size: .85rem; flex: 0 0 auto; }
+  .prob .ptag { font-size: .78rem; color: var(--k-text-muted); text-transform: uppercase; letter-spacing: .03em; }
+  .prob .pstate { font-size: .98rem; line-height: 1.5; margin-bottom: 12px; }
+
+  .answer-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .answer-row .meq { font-size: 1.1rem; }
+  math-field { min-width: 130px; font-size: 1.15rem; padding: 4px 8px; background: #fff; border: 2px solid var(--k-border); border-radius: 8px; }
+  math-field.right { border-color: var(--k-success); background: #F0F8F1; }
+  math-field.wrong { border-color: var(--k-error); background: #FBEDED; }
+
+  .result { margin-top: 10px; font-size: .9rem; font-weight: 600; min-height: 1.2em; }
+  .result.ok { color: var(--k-success); }
+  .result.no { color: var(--k-error); }
+  .result.neutral { color: var(--k-text-muted); font-weight: 400; }
+
+  details.sol { margin-top: 12px; }
+  details.sol summary { cursor: pointer; font-size: .86rem; font-weight: 600; color: var(--k-primary); list-style: none; display: inline-flex; align-items: center; gap: 6px; padding: 6px 0; }
+  details.sol summary::-webkit-details-marker { display: none; }
+  details.sol summary::before { content: "▸"; }
+  details.sol[open] summary::before { content: "▾"; }
+  .solbody { margin-top: 8px; padding: 12px 14px; background: #fff; border: 1px solid var(--k-border); border-radius: 8px; }
+  .solbody .line { font-size: 1.05rem; margin: 4px 0; }
+  .solbody .note { font-size: .82rem; color: var(--k-text-muted); margin-top: 8px; line-height: 1.4; }
+
+  #loading { color: var(--k-text-muted); font-size: .9rem; padding: 8px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Slope practice — lines through two points</h1>
+  <p class="lead">
+    For each line, find its slope and enter it as a fraction (type <code>/</code> to make a fraction,
+    e.g. <code>3/2</code>). Whole-number and negative answers are fine too. Press <strong>Check</strong>
+    to test your answer; open <strong>Show full solution</strong> if you get stuck.
+  </p>
+
+  <div class="seedbar card">
+    <label>Seed <input type="number" id="seed" value="1" min="0" step="1" /></label>
+    <button id="gen">New problems</button>
+    <button id="rand" class="ghost">Random seed</button>
+    <span class="seedhint">Same seed → the same set of numbers every time (share it so everyone gets identical problems). A random seed makes a fresh set.</span>
+  </div>
+
+  <div id="loading">Loading the maths tools…</div>
+  <div id="problems"></div>
+</div>
+
+<script type="module">
+import { convertLatexToMarkup, MathfieldElement } from 'https://cdn.jsdelivr.net/npm/mathlive@0.105.0/+esm';
+import { ComputeEngine } from 'https://cdn.jsdelivr.net/npm/@cortex-js/compute-engine@0.27.0/+esm';
+
+const ce = new ComputeEngine();
+const tex = (s) => convertLatexToMarkup(s);
+
+// Difficulty ramp: positive whole numbers → negatives → fractions → everything.
+// fr = coprime [numerator, denominator] bases for the slope; signs = slope sign;
+// k = multiplier that can force a not-yet-reduced fraction; runSign lets x2 < x1.
+const LEVELS = [
+  { fr:[[2,1],[3,1],[4,1],[5,1]], signs:[1],   k:[1],   lo:1,  hi:7,  runSign:[1],   note:'positive whole-number slope' },
+  { fr:[[2,1],[3,1]],             signs:[1],   k:[2,3], lo:1,  hi:7,  runSign:[1],   note:'whole-number slope (divide it out)' },
+  { fr:[[3,2],[2,3],[5,2],[4,3]], signs:[1],   k:[1],   lo:1,  hi:8,  runSign:[1],   note:'fraction in lowest terms' },
+  { fr:[[2,3],[3,4],[3,2],[5,3]], signs:[1],   k:[2],   lo:1,  hi:9,  runSign:[1],   note:'fraction you must reduce' },
+  { fr:[[2,1],[3,1]],             signs:[1],   k:[1,2], lo:-6, hi:6,  runSign:[1],   note:'now with negative coordinates' },
+  { fr:[[2,1],[3,1],[4,1]],       signs:[-1],  k:[1],   lo:-7, hi:7,  runSign:[1],   note:'negative slope' },
+  { fr:[[3,2],[2,3],[5,3]],       signs:[-1],  k:[1],   lo:-7, hi:7,  runSign:[1],   note:'negative fraction' },
+  { fr:[[2,3],[3,2],[5,4]],       signs:[-1,1],k:[2],   lo:-8, hi:8,  runSign:[-1,1],note:'everything together' },
+];
+
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+const pick = (arr, rng) => arr[Math.floor(rng() * arr.length)];
+const randInt = (a, b, rng) => { const lo = Math.min(a, b), hi = Math.max(a, b); return lo + Math.floor(rng() * (hi - lo + 1)); };
+const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a || 1; };
+const paren = (n) => n < 0 ? '(' + n + ')' : '' + n;
+
+function genData(level, rng) {
+  const cfg = LEVELS[level];
+  const [p, q] = pick(cfg.fr, rng);
+  const s = pick(cfg.signs, rng);
+  const k = pick(cfg.k, rng);
+  const rs = pick(cfg.runSign, rng);
+  const run = q * k * rs;       // x2 - x1
+  const rise = s * p * k * rs;  // y2 - y1   (rs cancels → slope = s·p/q)
+  const xlo = run > 0 ? cfg.lo : cfg.lo - run, xhi = run > 0 ? cfg.hi - run : cfg.hi;
+  const ylo = rise > 0 ? cfg.lo : cfg.lo - rise, yhi = rise > 0 ? cfg.hi - rise : cfg.hi;
+  const x1 = randInt(xlo, xhi, rng), x2 = x1 + run;
+  const y1 = randInt(ylo, yhi, rng), y2 = y1 + rise;
+  return { x1, y1, x2, y2, rise, run, note: cfg.note };
+}
+
+function reduced(rise, run) {
+  const g = gcd(rise, run);
+  let rr = rise / g, rn = run / g;
+  if (rn < 0) { rn = -rn; rr = -rr; }
+  return { rr, rn };
+}
+
+function buildCard(i, d) {
+  const card = document.createElement('div');
+  card.className = 'card prob';
+
+  const head = document.createElement('div');
+  head.className = 'phead';
+  head.innerHTML = '<span class="pnum">' + (i + 1) + '</span><span class="ptag">' + d.note + '</span>';
+  card.appendChild(head);
+
+  const state = document.createElement('div');
+  state.className = 'pstate';
+  state.innerHTML = 'Find the slope of the straight line through ' +
+    tex('P_1(' + d.x1 + ',\\ ' + d.y1 + ')') + ' and ' +
+    tex('P_2(' + d.x2 + ',\\ ' + d.y2 + ')') + '.';
+  card.appendChild(state);
+
+  const row = document.createElement('div');
+  row.className = 'answer-row';
+  const meq = document.createElement('span');
+  meq.className = 'meq';
+  meq.innerHTML = tex('m =');
+  const mf = new MathfieldElement();
+  mf.mathVirtualKeyboardPolicy = 'manual';
+  mf.setAttribute('aria-label', 'your slope for problem ' + (i + 1));
+  const btn = document.createElement('button');
+  btn.textContent = 'Check';
+  row.appendChild(meq); row.appendChild(mf); row.appendChild(btn);
+  card.appendChild(row);
+
+  const result = document.createElement('div');
+  result.className = 'result neutral';
+  result.textContent = 'Type your answer, then check.';
+  card.appendChild(result);
+
+  // ---- Full solution (rendered with MathLive) ----
+  const { rr, rn } = reduced(d.rise, d.run);
+  const rawStr = '\\dfrac{' + d.rise + '}{' + d.run + '}';
+  const redStr = rn === 1 ? '' + rr : '\\dfrac{' + rr + '}{' + rn + '}';
+  const lines = [
+    'm = \\dfrac{y_2 - y_1}{x_2 - x_1}',
+    '= \\dfrac{' + paren(d.y2) + ' - ' + paren(d.y1) + '}{' + paren(d.x2) + ' - ' + paren(d.x1) + '}',
+    '= ' + rawStr
+  ];
+  if (redStr !== rawStr) lines.push('= ' + redStr);
+
+  const details = document.createElement('details');
+  details.className = 'sol';
+  const summary = document.createElement('summary');
+  summary.textContent = 'Show full solution';
+  details.appendChild(summary);
+  const body = document.createElement('div');
+  body.className = 'solbody';
+  body.innerHTML = lines.map(l => '<div class="line">' + tex(l) + '</div>').join('') +
+    '<div class="note">Slope = change in ' + tex('y') + ' over change in ' + tex('x') +
+    '. Subtract in the same order for both, then write the fraction in lowest terms.</div>';
+  details.appendChild(body);
+  card.appendChild(details);
+
+  function check() {
+    const latex = (mf.value || '').trim();
+    if (!latex) {
+      result.className = 'result neutral';
+      result.textContent = 'Type your answer, then check.';
+      mf.classList.remove('right', 'wrong');
+      return;
+    }
+    let ok = false;
+    try {
+      const val = Number(ce.parse(latex).N().valueOf());
+      ok = Number.isFinite(val) && Math.abs(val - d.rise / d.run) < 1e-9;
+    } catch (e) { ok = false; }
+    if (ok) {
+      result.className = 'result ok';
+      result.innerHTML = tex('\\checkmark') + ' Correct — nicely done.';
+      mf.classList.remove('wrong'); mf.classList.add('right');
+    } else {
+      result.className = 'result no';
+      result.textContent = 'Not quite — check your working and try again.';
+      mf.classList.remove('right'); mf.classList.add('wrong');
+    }
+  }
+  btn.addEventListener('click', check);
+  mf.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); check(); } });
+
+  return card;
+}
+
+function render(seed) {
+  const rng = mulberry32(seed >>> 0);
+  const host = document.getElementById('problems');
+  host.innerHTML = '';
+  for (let i = 0; i < LEVELS.length; i++) host.appendChild(buildCard(i, genData(i, rng)));
+}
+
+// MathfieldElement may need a tick to register; build once the module has loaded.
+document.getElementById('loading').remove();
+const seedInput = document.getElementById('seed');
+document.getElementById('gen').addEventListener('click', () => render(parseInt(seedInput.value || '0', 10)));
+document.getElementById('rand').addEventListener('click', () => {
+  const s = Math.floor(Math.random() * 100000);
+  seedInput.value = s;
+  render(s);
+});
+render(parseInt(seedInput.value || '1', 10));
+</script>
+</body>
+</html>
