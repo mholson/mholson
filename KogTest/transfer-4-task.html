@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Transfer task: growth rate</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsxgraph@1.10.1/distrib/jsxgraph.css" />
+<script src="https://cdn.jsdelivr.net/npm/jsxgraph@1.10.1/distrib/jsxgraphcore.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mathlive@0.105.0/mathlive-static.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mathlive@0.105.0/mathlive-fonts.css" />
+
+<style>
+  :root {
+    --k-primary:#4B2E83; --k-accent:#00B3A4; --k-stretch:#E8743B; --k-formalize:#2E6FB7; --k-transfer:#3FA34D;
+    --k-success:#3FA34D; --k-error:#D14343; --k-bg:#FFFFFF; --k-surface:#F7F6FB; --k-border:#E4E1EC;
+    --k-text:#1F1B2E; --k-text-muted:#5B5670;
+    --k-radius:12px; --k-shadow:0 1px 3px rgba(31,27,46,.08), 0 4px 16px rgba(31,27,46,.06);
+    --k-font:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--k-bg); color: var(--k-text); font-family: var(--k-font); }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 18px; }
+  h1 { font-size: 1.2rem; margin: 0 0 4px; color: var(--k-transfer); }
+  .step { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--k-transfer); }
+  .scenario { font-size: .96rem; line-height: 1.6; margin: 10px 0 14px; }
+  .card { background: var(--k-surface); border: 1px solid var(--k-border); border-radius: var(--k-radius); box-shadow: var(--k-shadow); padding: 14px 16px; margin-bottom: 14px; }
+  #board { width: 100%; height: 320px; background: #fff; border-radius: var(--k-radius); }
+
+  .q { border-top: 1px solid var(--k-border); padding-top: 12px; margin-top: 12px; }
+  .q:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+  .q .qtext { font-size: .95rem; line-height: 1.5; margin-bottom: 9px; }
+  .qrow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .qrow .meq { font-size: 1.02rem; }
+  math-field { min-width: 110px; font-size: 1.06rem; padding: 4px 8px; background: #fff; border: 2px solid var(--k-border); border-radius: 8px; }
+  math-field.right { border-color: var(--k-success); background: #F0F8F1; }
+  math-field.wrong { border-color: var(--k-error); background: #FBEDED; }
+  button.chk { font-family: inherit; font-size: .85rem; font-weight: 600; color: var(--k-transfer); background: #fff; border: 1px solid var(--k-border); border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+  .opt { font-family: inherit; font-size: .85rem; font-weight: 600; color: var(--k-primary); background: #fff; border: 1px solid var(--k-border); border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+  .opt.sel { border-color: var(--k-transfer); background: #EDF7EE; color: #2C6E37; }
+  .result { margin-top: 8px; font-size: .88rem; font-weight: 600; min-height: 1.1em; }
+  .result.ok { color: var(--k-success); } .result.no { color: var(--k-error); } .result.neutral { color: var(--k-text-muted); font-weight: 400; }
+  details.sol { margin-top: 14px; }
+  details.sol summary { cursor: pointer; font-size: .84rem; font-weight: 600; color: var(--k-transfer); list-style: none; }
+  details.sol summary::-webkit-details-marker { display: none; }
+  details.sol summary::before { content: "▸ "; } details.sol[open] summary::before { content: "▾ "; }
+  .solbody { margin-top: 8px; padding: 10px 12px; background: #fff; border: 1px solid var(--k-border); border-radius: 8px; }
+  .solbody .line { font-size: 1rem; margin: 3px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="step">Transfer · task B</span>
+  <h1>How fast is it growing?</h1>
+  <p class="scenario" id="scenario"></p>
+
+  <div class="card"><div id="board"></div></div>
+  <div class="card" id="questions"></div>
+</div>
+
+<script type="module">
+import { convertLatexToMarkup, MathfieldElement } from 'https://cdn.jsdelivr.net/npm/mathlive@0.105.0/+esm';
+import { ComputeEngine } from 'https://cdn.jsdelivr.net/npm/@cortex-js/compute-engine@0.27.0/+esm';
+const ce = new ComputeEngine();
+const tex = (s) => convertLatexToMarkup(s);
+
+const h = (t) => 0.5 * t * t + 2 * t;   // height in metres
+const hp = (t) => t + 2;                // growth rate in m/year
+
+document.getElementById('scenario').innerHTML =
+  'A young tree’s height, in metres, after ' + tex('t') + ' years is ' + tex('h(t) = 0.5\\,t^2 + 2t') +
+  ', for ' + tex('0 \\le t \\le 8') + '. Its growth rate is how fast the height is changing — the gradient of this graph.';
+
+const board = JXG.JSXGraph.initBoard('board', {
+  boundingbox: [-0.8, 52, 8.6, -5], axis: true, showCopyright: false, showNavigation: false,
+  zoom: { wheel: false }, pan: { enabled: false },
+  defaultAxes: {
+    x: { name: 't (years)', withLabel: true, label: { position: 'rt', offset: [-60, 16] }, ticks: { insertTicks: false, ticksDistance: 1, minorTicks: 0 } },
+    y: { name: 'h (m)', withLabel: true, label: { position: 'urt', offset: [10, -5] }, ticks: { insertTicks: false, ticksDistance: 10, minorTicks: 0 } }
+  }
+});
+board.create('functiongraph', [h, 0, 8], { strokeColor: '#7E5BB8', strokeWidth: 4, fixed: true, highlight: false });
+
+function numericAt(latex, v, xv) { ce.assign(v, xv); return Number(ce.parse(latex).N().valueOf()); }
+function exprMatches(latex, fn, v) { const pts = [0.4, 1.3, 2.6, 5.1]; try { for (const t of pts) { const val = numericAt(latex, v, t); if (!Number.isFinite(val) || Math.abs(val - fn(t)) > 1e-6) return false; } return true; } catch (e) { return false; } }
+function numMatches(latex, val) { try { const v = Number(ce.parse(latex).N().valueOf()); return Number.isFinite(v) && Math.abs(v - val) < 1e-6; } catch (e) { return false; } }
+function mf() { const m = new MathfieldElement(); m.mathVirtualKeyboardPolicy = 'manual'; return m; }
+function setRes(el, ok, okMsg, noMsg) { el.className = 'result ' + (ok ? 'ok' : 'no'); el.innerHTML = ok ? (tex('\\checkmark') + ' ' + okMsg) : noMsg; }
+
+const host = document.getElementById('questions');
+function inputQ(qHTML, meqLatex, checkFn, okMsg, noMsg) {
+  const q = document.createElement('div'); q.className = 'q'; q.innerHTML = '<div class="qtext">' + qHTML + '</div>';
+  const row = document.createElement('div'); row.className = 'qrow';
+  const meq = document.createElement('span'); meq.className = 'meq'; meq.innerHTML = tex(meqLatex);
+  const field = mf(); const btn = document.createElement('button'); btn.className = 'chk'; btn.textContent = 'Check';
+  row.append(meq, field, btn); q.appendChild(row);
+  const res = document.createElement('div'); res.className = 'result neutral'; res.textContent = 'Type your answer, then check.'; q.appendChild(res);
+  btn.addEventListener('click', () => { const ok = checkFn((field.value || '').trim()); field.classList.toggle('right', ok); field.classList.toggle('wrong', !ok); setRes(res, ok, okMsg, noMsg); });
+  host.appendChild(q);
+}
+function mcQ(qHTML, options) {
+  const q = document.createElement('div'); q.className = 'q'; q.innerHTML = '<div class="qtext">' + qHTML + '</div>';
+  const wrap = document.createElement('div'); wrap.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;'; q.appendChild(wrap);
+  const res = document.createElement('div'); res.className = 'result neutral'; q.appendChild(res);
+  options.forEach(([label, correct, fb]) => { const b = document.createElement('button'); b.className = 'opt'; b.textContent = label; b.addEventListener('click', () => { wrap.querySelectorAll('.opt').forEach(o => o.classList.remove('sel')); b.classList.add('sel'); res.className = 'result ' + (correct ? 'ok' : 'no'); res.innerHTML = correct ? (tex('\\checkmark') + ' ' + fb) : fb; }); wrap.appendChild(b); });
+  host.appendChild(q);
+}
+
+inputQ('1. Find the growth-rate function ' + tex("h'(t)") + ' (in m/year).', "h'(t) =", (l) => exprMatches(l, hp, 't'), 'Correct.', 'Not quite — differentiate ' + tex('0.5\\,t^2 + 2t') + '.');
+inputQ('2. How fast is the tree growing after 6 years (in m/year)?', "h'(6) =", (l) => numMatches(l, hp(6)), 'Correct.', 'Not quite — substitute ' + tex('t = 6') + ' into ' + tex("h'(t)") + '.');
+inputQ('3. After how many years is the tree growing at exactly 5 m/year?', 't =', (l) => numMatches(l, 3), 'Correct.', 'Not quite — set ' + tex("h'(t) = 5") + ' and solve for ' + tex('t') + '.');
+mcQ('4. As the years pass, the tree’s growth rate is…', [
+  ['speeding up', true, 'Right — ' + tex("h'(t) = t + 2") + ' increases with ' + tex('t') + ', so each year it grows a little faster.'],
+  ['slowing down', false, 'Look at ' + tex("h'(t) = t + 2") + ' — does it get bigger or smaller as ' + tex('t') + ' grows?'],
+  ['staying constant', false, 'A constant rate would mean ' + tex("h'(t)") + ' has no ' + tex('t') + ' in it.']
+]);
+
+const d = document.createElement('details'); d.className = 'sol'; d.innerHTML = '<summary>Show worked solution</summary>';
+const b = document.createElement('div'); b.className = 'solbody';
+b.innerHTML = ["h'(t) = t + 2", "h'(6) = 8 \\text{ m/year}", "t + 2 = 5 \\Rightarrow t = 3 \\text{ years}", "h'(t) = t + 2 \\text{ increases} \\Rightarrow \\text{speeding up}"].map(l => '<div class="line">' + tex(l) + '</div>').join('');
+d.appendChild(b); host.appendChild(d);
+</script>
+</body>
+</html>

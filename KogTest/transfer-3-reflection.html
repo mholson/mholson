@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Reflection: looking back on the arc</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mathlive@0.105.0/mathlive-static.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mathlive@0.105.0/mathlive-fonts.css" />
+<style>
+  :root {
+    --k-primary:#4B2E83; --k-accent:#00B3A4; --k-stretch:#E8743B; --k-formalize:#2E6FB7; --k-transfer:#3FA34D;
+    --k-success:#3FA34D; --k-warn:#E8A13B; --k-error:#D14343; --k-bg:#FFFFFF; --k-surface:#F7F6FB; --k-border:#E4E1EC;
+    --k-text:#1F1B2E; --k-text-muted:#5B5670;
+    --k-radius:12px; --k-shadow:0 1px 3px rgba(31,27,46,.08), 0 4px 16px rgba(31,27,46,.06);
+    --k-font:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--k-bg); color: var(--k-text); font-family: var(--k-font); }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 18px; }
+  h1 { font-size: 1.2rem; margin: 0 0 4px; color: var(--k-transfer); }
+  .step { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--k-transfer); }
+  p.lead { margin: 0 0 16px; color: var(--k-text-muted); font-size: .92rem; line-height: 1.45; }
+
+  .card { background: var(--k-surface); border: 1px solid var(--k-border); border-radius: var(--k-radius); box-shadow: var(--k-shadow); padding: 16px 18px; margin-bottom: 14px; }
+  .card h2 { font-size: 1rem; margin: 0 0 8px; color: var(--k-primary); }
+  .card .prompt { font-size: .94rem; line-height: 1.55; margin: 0 0 10px; }
+  .card .recall { font-size: .9rem; line-height: 1.5; background: #fff; border: 1px solid var(--k-border); border-left: 3px solid var(--k-transfer); border-radius: 0 8px 8px 0; padding: 10px 12px; margin: 0 0 12px; color: var(--k-text-muted); }
+  textarea { width: 100%; min-height: 84px; font-family: inherit; font-size: .95rem; line-height: 1.5; color: var(--k-text); padding: 10px 12px; border: 1px solid var(--k-border); border-radius: 8px; resize: vertical; background: #fff; }
+  textarea:focus { outline: none; border-color: var(--k-transfer); }
+
+  .skill { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--k-border); }
+  .skill:first-of-type { border-top: none; }
+  .skill .sk { font-size: .92rem; line-height: 1.4; }
+  .rate { display: flex; gap: 6px; flex-wrap: wrap; }
+  .rate button { font-family: inherit; font-size: .78rem; font-weight: 600; border: 1px solid var(--k-border); background: #fff; color: var(--k-text-muted); border-radius: 999px; padding: 6px 11px; cursor: pointer; white-space: nowrap; }
+  .rate button.sel[data-v="0"] { background: #FBEDED; border-color: #E7B4B4; color: #9A3434; }
+  .rate button.sel[data-v="1"] { background: #FDF6E8; border-color: #F0D9A8; color: #8A6516; }
+  .rate button.sel[data-v="2"] { background: #EDF7EE; border-color: #BFE3C5; color: #2C6E37; }
+
+  .summary { font-size: .92rem; font-weight: 600; color: var(--k-transfer); margin-top: 12px; }
+  .bar { height: 8px; background: var(--k-border); border-radius: 999px; overflow: hidden; margin-top: 6px; }
+  .bar > span { display: block; height: 100%; background: var(--k-transfer); width: 0; transition: width .25s; }
+
+  .foot { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  button.copy { font-family: inherit; font-size: .85rem; font-weight: 600; color: #fff; background: var(--k-transfer); border: none; border-radius: 8px; padding: 9px 14px; cursor: pointer; }
+  .saved { font-size: .8rem; color: var(--k-text-muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="step">Transfer · reflection</span>
+  <h1>Looking back on the whole journey</h1>
+  <p class="lead">
+    You started with a question that seemed impossible and built your way to an answer. Take a few minutes
+    to make that learning visible — to yourself. Your responses are saved in this browser as you type.
+  </p>
+
+  <div class="card">
+    <h2>1 · The question that started it all</h2>
+    <div class="recall" id="eq"></div>
+    <p class="prompt">In your own words, how would you answer this now?</p>
+    <textarea id="r_eq" placeholder="A curve can have a steepness at a single point because…"></textarea>
+  </div>
+
+  <div class="card">
+    <h2>2 · The big idea, in your words</h2>
+    <div class="recall" id="bigidea"></div>
+    <p class="prompt">Explain what a <b>derivative</b> is to a friend who hasn’t studied calculus — no formulas, just the idea.</p>
+    <textarea id="r_big" placeholder="A derivative is…"></textarea>
+  </div>
+
+  <div class="card">
+    <h2>3 · Honest self-check</h2>
+    <p class="prompt">For each skill, choose where you are right now. There are no wrong answers — this is for you.</p>
+    <div id="skills"></div>
+    <div class="summary" id="summ">Confident in 0 of 6 skills.</div>
+    <div class="bar"><span id="barfill"></span></div>
+  </div>
+
+  <div class="card">
+    <h2>4 · Where else does this live?</h2>
+    <p class="prompt">Rate of change shows up far beyond this curve — in physics (velocity), economics (marginal profit), biology (growth), and more. Name one place <b>outside maths class</b> where knowing "how fast something is changing right now" would matter, and why.</p>
+    <textarea id="r_conn" placeholder="One place a rate of change matters is…"></textarea>
+  </div>
+
+  <div class="card">
+    <h2>5 · A thinking question</h2>
+    <p class="prompt">We treated "speed at an instant" as something real, even though it needed an idea — the limit — that never quite finishes arriving. Do you think an instantaneous rate of change is a real thing in the world, or a useful mathematical fiction? There is no right answer; argue your view.</p>
+    <textarea id="r_tok" placeholder="I think…"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="foot">
+      <button class="copy" id="copy">Copy my reflection</button>
+      <span class="saved" id="savedmsg">Saved automatically in this browser.</span>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { convertLatexToMarkup } from 'https://cdn.jsdelivr.net/npm/mathlive@0.105.0/+esm';
+const tex = (s) => convertLatexToMarkup(s);
+
+document.getElementById('eq').innerHTML = '“Slope is defined between two points — so how can a curve have a slope at just <b>one</b>?”';
+document.getElementById('bigidea').innerHTML = 'The steepness of a curve at a point is a single number; gathered over every point it becomes a whole new function — the <b>derivative</b>, ' + tex("f'(x) = \\lim_{h\\to 0}\\dfrac{f(x+h)-f(x)}{h}") + '.';
+
+const SKILLS = [
+  'I can find the average rate of change between two points (a secant slope).',
+  'I can explain why the steepness at a single point needs a tangent line.',
+  'I can differentiate from first principles, letting the step h shrink to zero.',
+  'I can differentiate using the power rule.',
+  'I can find the gradient and the equation of the tangent at a point.',
+  'I can interpret a derivative as a rate of change in a real context.'
+];
+const LABELS = ['Not yet', 'Getting there', 'Confident'];
+const KEY = 'learningarc_reflection_v1';
+const state = JSON.parse(localStorage.getItem(KEY) || '{}');
+
+function save() { localStorage.setItem(KEY, JSON.stringify(state)); flashSaved(); }
+let savedTimer = null;
+function flashSaved() { const m = document.getElementById('savedmsg'); m.textContent = 'Saved ✓'; clearTimeout(savedTimer); savedTimer = setTimeout(() => { m.textContent = 'Saved automatically in this browser.'; }, 1200); }
+
+// textareas
+['r_eq', 'r_big', 'r_conn', 'r_tok'].forEach((id) => {
+  const ta = document.getElementById(id);
+  if (state[id]) ta.value = state[id];
+  ta.addEventListener('input', () => { state[id] = ta.value; save(); });
+});
+
+// skills with rating
+const skillsEl = document.getElementById('skills');
+SKILLS.forEach((text, i) => {
+  const row = document.createElement('div'); row.className = 'skill';
+  const label = document.createElement('div'); label.className = 'sk'; label.textContent = text;
+  const rate = document.createElement('div'); rate.className = 'rate';
+  LABELS.forEach((lab, v) => {
+    const b = document.createElement('button'); b.textContent = lab; b.dataset.v = v;
+    if (state['sk' + i] === v) b.classList.add('sel');
+    b.addEventListener('click', () => {
+      rate.querySelectorAll('button').forEach((x) => x.classList.remove('sel'));
+      b.classList.add('sel'); state['sk' + i] = v; save(); updateSummary();
+    });
+    rate.appendChild(b);
+  });
+  row.append(label, rate); skillsEl.appendChild(row);
+});
+
+function updateSummary() {
+  let conf = 0; for (let i = 0; i < SKILLS.length; i++) if (state['sk' + i] === 2) conf++;
+  document.getElementById('summ').textContent = 'Confident in ' + conf + ' of ' + SKILLS.length + ' skills.';
+  document.getElementById('barfill').style.width = (100 * conf / SKILLS.length) + '%';
+}
+updateSummary();
+
+// copy
+document.getElementById('copy').addEventListener('click', async () => {
+  const lines = [
+    'MY REFLECTION — rates of change', '',
+    '1. Answering the essential question:', state.r_eq || '(blank)', '',
+    '2. What a derivative is:', state.r_big || '(blank)', '',
+    '3. Self-check:',
+    ...SKILLS.map((s, i) => '  • ' + s + '  →  ' + (state['sk' + i] != null ? LABELS[state['sk' + i]] : '(not rated)')), '',
+    '4. Where rate of change matters outside maths:', state.r_conn || '(blank)', '',
+    '5. Is an instantaneous rate real or a useful fiction?:', state.r_tok || '(blank)'
+  ];
+  const text = lines.join('\n');
+  try { await navigator.clipboard.writeText(text); document.getElementById('savedmsg').textContent = 'Copied to clipboard ✓'; }
+  catch (e) { const m = document.getElementById('savedmsg'); m.textContent = 'Press Ctrl/Cmd+C to copy'; }
+});
+</script>
+</body>
+</html>
