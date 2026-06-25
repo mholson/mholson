@@ -42,6 +42,10 @@
   math-field { min-width: 130px; font-size: 1.15rem; padding: 4px 8px; background: #fff; border: 2px solid var(--k-border); border-radius: 8px; }
   math-field.right { border-color: var(--k-success); background: #F0F8F1; }
   math-field.wrong { border-color: var(--k-error); background: #FBEDED; }
+  .answer-entry { min-width: 130px; min-height: 38px; display: inline-flex; align-items: center; justify-content: flex-start; color: var(--k-text); background: #fff; border: 2px solid var(--k-border); border-radius: 8px; padding: 4px 10px; font-size: 1.15rem; font-weight: 500; }
+  .answer-entry.placeholder { color: var(--k-text-muted); font-size: .9rem; font-weight: 600; }
+  .answer-entry.right { border-color: var(--k-success); background: #F0F8F1; }
+  .answer-entry.wrong { border-color: var(--k-error); background: #FBEDED; }
 
   .result { margin-top: 10px; font-size: .9rem; font-weight: 600; min-height: 1.2em; }
   .result.ok { color: var(--k-success); }
@@ -58,6 +62,22 @@
   .solbody .note { font-size: .82rem; color: var(--k-text-muted); margin-top: 8px; line-height: 1.4; }
 
   #loading { color: var(--k-text-muted); font-size: .9rem; padding: 8px 0; }
+
+  .answer-dialog { width: min(560px, calc(100vw - 24px)); max-height: calc(100vh - 24px); margin: 12px auto auto; padding: 0; border: 1px solid var(--k-border); border-radius: 10px; box-shadow: 0 12px 40px rgba(31,27,46,.22); background: #fff; color: var(--k-text); }
+  .answer-dialog::backdrop { background: rgba(31, 27, 46, .18); }
+  .dialog-body { padding: 14px 16px 16px; }
+  .dialog-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+  .dialog-title { margin: 0; color: var(--k-primary); font-size: 1rem; }
+  .dialog-prompt { margin: 4px 0 12px; color: var(--k-text-muted); font-size: .9rem; line-height: 1.45; }
+  .dialog-answer-line { display: flex; align-items: center; gap: 10px; }
+  .dialog-answer-line .meq { font-size: 1.1rem; }
+  #dialogField { flex: 1 1 auto; min-width: 0; width: 100%; font-size: 1.3rem; padding: 8px 10px; }
+  .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+
+  @media (max-width: 520px) {
+    .dialog-answer-line { align-items: stretch; flex-direction: column; gap: 6px; }
+    .dialog-actions button { flex: 1 1 0; }
+  }
 </style>
 </head>
 <body>
@@ -80,12 +100,92 @@
   <div id="problems"></div>
 </div>
 
+<dialog id="answerDialog" class="answer-dialog">
+  <form method="dialog" class="dialog-body">
+    <div class="dialog-top">
+      <div>
+        <h2 class="dialog-title" id="dialogTitle">Enter answer</h2>
+        <div class="dialog-prompt" id="dialogPrompt"></div>
+      </div>
+      <button type="button" class="ghost" id="dialogClose" aria-label="Close answer editor">Close</button>
+    </div>
+    <div class="dialog-answer-line">
+      <span class="meq" id="dialogEq"></span>
+      <math-field id="dialogField" aria-label="answer editor"></math-field>
+    </div>
+    <div class="dialog-actions">
+      <button type="button" class="ghost" id="dialogClear">Clear</button>
+      <button type="submit" id="dialogUse">Use answer</button>
+    </div>
+  </form>
+</dialog>
+
 <script type="module">
-import { convertLatexToMarkup, MathfieldElement } from 'https://cdn.jsdelivr.net/npm/mathlive@0.105.0/+esm';
+import { convertLatexToMarkup } from 'https://cdn.jsdelivr.net/npm/mathlive@0.105.0/+esm';
 import { ComputeEngine } from 'https://cdn.jsdelivr.net/npm/@cortex-js/compute-engine@0.27.0/+esm';
 
 const ce = new ComputeEngine();
 const tex = (s) => convertLatexToMarkup(s);
+const answerDialog = document.getElementById('answerDialog');
+const dialogTitle = document.getElementById('dialogTitle');
+const dialogPrompt = document.getElementById('dialogPrompt');
+const dialogEq = document.getElementById('dialogEq');
+const dialogField = document.getElementById('dialogField');
+const dialogClose = document.getElementById('dialogClose');
+const dialogClear = document.getElementById('dialogClear');
+let activeAnswer = null;
+
+dialogEq.innerHTML = tex('m =');
+dialogField.mathVirtualKeyboardPolicy = 'manual';
+
+function showKeyboard() {
+  requestAnimationFrame(() => {
+    dialogField.focus();
+    if (window.mathVirtualKeyboard) window.mathVirtualKeyboard.show();
+  });
+}
+
+function hideKeyboard() {
+  if (window.mathVirtualKeyboard) window.mathVirtualKeyboard.hide();
+}
+
+function openAnswerDialog(answer) {
+  activeAnswer = answer;
+  dialogTitle.textContent = 'Problem ' + (answer.index + 1) + ' answer';
+  dialogPrompt.innerHTML = answer.promptHTML;
+  dialogField.value = answer.getValue();
+  if (!answerDialog.open) answerDialog.showModal();
+  showKeyboard();
+}
+
+function closeAnswerDialog() {
+  activeAnswer = null;
+  hideKeyboard();
+  answerDialog.close();
+}
+
+dialogClose.addEventListener('click', closeAnswerDialog);
+dialogClear.addEventListener('click', () => {
+  dialogField.value = '';
+  showKeyboard();
+});
+answerDialog.addEventListener('close', hideKeyboard);
+answerDialog.addEventListener('cancel', () => {
+  activeAnswer = null;
+  hideKeyboard();
+});
+answerDialog.addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (activeAnswer) activeAnswer.setValue(dialogField.value || '');
+  closeAnswerDialog();
+});
+dialogField.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    if (activeAnswer) activeAnswer.setValue(dialogField.value || '');
+    closeAnswerDialog();
+  }
+});
 
 // Difficulty ramp: positive whole numbers → negatives → fractions → everything.
 // fr = coprime [numerator, denominator] bases for the slope; signs = slope sign;
@@ -157,12 +257,15 @@ function buildCard(i, d) {
   const meq = document.createElement('span');
   meq.className = 'meq';
   meq.innerHTML = tex('m =');
-  const mf = new MathfieldElement();
-  mf.mathVirtualKeyboardPolicy = 'manual';
-  mf.setAttribute('aria-label', 'your slope for problem ' + (i + 1));
+  let answerLatex = '';
+  const answerEntry = document.createElement('button');
+  answerEntry.type = 'button';
+  answerEntry.className = 'answer-entry placeholder';
+  answerEntry.textContent = 'Enter answer';
+  answerEntry.setAttribute('aria-label', 'enter your slope for problem ' + (i + 1));
   const btn = document.createElement('button');
   btn.textContent = 'Check';
-  row.appendChild(meq); row.appendChild(mf); row.appendChild(btn);
+  row.appendChild(meq); row.appendChild(answerEntry); row.appendChild(btn);
   card.appendChild(row);
 
   const result = document.createElement('div');
@@ -194,12 +297,31 @@ function buildCard(i, d) {
   details.appendChild(body);
   card.appendChild(details);
 
+  const resetEntryState = () => answerEntry.classList.remove('right', 'wrong');
+  const updateEntry = () => {
+    const latex = answerLatex.trim();
+    answerEntry.classList.toggle('placeholder', !latex);
+    answerEntry.innerHTML = latex ? tex(latex) : 'Enter answer';
+    resetEntryState();
+  };
+  answerEntry.addEventListener('click', () => openAnswerDialog({
+    index: i,
+    promptHTML: state.innerHTML,
+    getValue: () => answerLatex,
+    setValue: (value) => {
+      answerLatex = value.trim();
+      updateEntry();
+      result.className = 'result neutral';
+      result.textContent = answerLatex ? 'Press Check to test your answer.' : 'Type your answer, then check.';
+    }
+  }));
+
   function check() {
-    const latex = (mf.value || '').trim();
+    const latex = answerLatex.trim();
     if (!latex) {
       result.className = 'result neutral';
       result.textContent = 'Type your answer, then check.';
-      mf.classList.remove('right', 'wrong');
+      resetEntryState();
       return;
     }
     let ok = false;
@@ -210,15 +332,14 @@ function buildCard(i, d) {
     if (ok) {
       result.className = 'result ok';
       result.innerHTML = tex('\\checkmark') + ' Correct — nicely done.';
-      mf.classList.remove('wrong'); mf.classList.add('right');
+      answerEntry.classList.remove('wrong'); answerEntry.classList.add('right');
     } else {
       result.className = 'result no';
       result.textContent = 'Not quite — check your working and try again.';
-      mf.classList.remove('right'); mf.classList.add('wrong');
+      answerEntry.classList.remove('right'); answerEntry.classList.add('wrong');
     }
   }
   btn.addEventListener('click', check);
-  mf.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); check(); } });
 
   return card;
 }
