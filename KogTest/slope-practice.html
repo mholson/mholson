@@ -73,6 +73,10 @@
   .dialog-answer-line .meq { font-size: 1.1rem; }
   #dialogField { flex: 1 1 auto; min-width: 0; width: 100%; font-size: 1.3rem; padding: 8px 10px; }
   .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+  .keyboard-dock { display: none; position: fixed; left: 0; right: 0; bottom: 0; height: min(218px, 42vh); z-index: 30; overflow: hidden; background: #fff; border-top: 1px solid var(--k-border); box-shadow: 0 -6px 22px rgba(31,27,46,.16); }
+  body.keyboard-open .keyboard-dock { display: block; }
+  body.keyboard-open .wrap { padding-bottom: min(236px, 46vh); }
+  .keyboard-dock .ML__keyboard { --keycap-height: 42px; --keycap-gap: 6px; --keycap-max-width: 72px; --keyboard-padding-top: 6px; height: 100%; }
 
   @media (max-width: 520px) {
     .dialog-answer-line { align-items: stretch; flex-direction: column; gap: 6px; }
@@ -119,6 +123,7 @@
     </div>
   </form>
 </dialog>
+<div id="keyboardDock" class="keyboard-dock" aria-hidden="true"></div>
 
 <script type="module">
 import { convertLatexToMarkup } from 'https://cdn.jsdelivr.net/npm/mathlive@0.105.0/+esm';
@@ -133,20 +138,36 @@ const dialogEq = document.getElementById('dialogEq');
 const dialogField = document.getElementById('dialogField');
 const dialogClose = document.getElementById('dialogClose');
 const dialogClear = document.getElementById('dialogClear');
+const keyboardDock = document.getElementById('keyboardDock');
 let activeAnswer = null;
 
 dialogEq.innerHTML = tex('m =');
-dialogField.mathVirtualKeyboardPolicy = 'manual';
+dialogField.mathVirtualKeyboardPolicy = 'sandboxed';
+
+function configureKeyboardDock() {
+  if (!window.mathVirtualKeyboard) return;
+  try {
+    window.mathVirtualKeyboard.container = keyboardDock;
+  } catch (e) {
+    // In some host pages MathLive starts as an iframe proxy. The sandboxed
+    // policy above should replace it, but keep the UI usable if it cannot.
+  }
+}
 
 function showKeyboard() {
+  configureKeyboardDock();
+  document.body.classList.add('keyboard-open');
+  keyboardDock.removeAttribute('aria-hidden');
   requestAnimationFrame(() => {
     dialogField.focus();
-    if (window.mathVirtualKeyboard) window.mathVirtualKeyboard.show();
+    if (window.mathVirtualKeyboard) window.mathVirtualKeyboard.show({ animate: false });
   });
 }
 
 function hideKeyboard() {
-  if (window.mathVirtualKeyboard) window.mathVirtualKeyboard.hide();
+  if (window.mathVirtualKeyboard) window.mathVirtualKeyboard.hide({ animate: false });
+  document.body.classList.remove('keyboard-open');
+  keyboardDock.setAttribute('aria-hidden', 'true');
 }
 
 function openAnswerDialog(answer) {
@@ -169,6 +190,7 @@ dialogClear.addEventListener('click', () => {
   dialogField.value = '';
   showKeyboard();
 });
+dialogField.addEventListener('focus', showKeyboard);
 answerDialog.addEventListener('close', hideKeyboard);
 answerDialog.addEventListener('cancel', () => {
   activeAnswer = null;
