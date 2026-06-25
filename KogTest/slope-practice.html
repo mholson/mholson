@@ -63,9 +63,12 @@
 
   #loading { color: var(--k-text-muted); font-size: .9rem; padding: 8px 0; }
 
-  .answer-dialog { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); width: min(560px, calc(100vw - 24px)); max-height: min(360px, calc(100vh - 220px)); margin: 0; padding: 0; overflow: auto; z-index: 20; border: 1px solid var(--k-border); border-radius: 10px; box-shadow: 0 12px 40px rgba(31,27,46,.22); background: #fff; color: var(--k-text); }
+  .answer-dialog { position: fixed; top: 8px; left: 50%; transform: translateX(-50%); width: min(600px, calc(100vw - 16px)); max-height: calc(100vh - 16px); margin: 0; padding: 0; overflow: hidden; z-index: 20; border: 1px solid var(--k-border); border-radius: 10px; box-shadow: 0 12px 40px rgba(31,27,46,.22); background: #fff; color: var(--k-text); }
+  .answer-dialog[open] { display: flex; flex-direction: column; }
   .answer-dialog::backdrop { background: rgba(31, 27, 46, .18); }
-  .dialog-body { padding: 14px 16px 16px; }
+  .dialog-body { display: flex; flex: 1 1 auto; flex-direction: column; min-height: 0; overflow: hidden; padding: 0; }
+  .dialog-content { flex: 0 1 auto; overflow: auto; padding: 14px 16px 16px; }
+  .answer-dialog.keyboard-open .dialog-content { max-height: 42vh; }
   .dialog-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
   .dialog-title { margin: 0; color: var(--k-primary); font-size: 1rem; }
   .dialog-prompt { margin: 4px 0 12px; color: var(--k-text-muted); font-size: .9rem; line-height: 1.45; }
@@ -73,9 +76,8 @@
   .dialog-answer-line .meq { font-size: 1.1rem; }
   #dialogField { flex: 1 1 auto; min-width: 0; width: 100%; font-size: 1.3rem; padding: 8px 10px; }
   .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
-  .keyboard-dock { display: none; position: fixed; left: 0; right: 0; bottom: 0; height: min(218px, 42vh); z-index: 30; overflow: hidden; background: #fff; border-top: 1px solid var(--k-border); box-shadow: 0 -6px 22px rgba(31,27,46,.16); }
-  body.keyboard-open .keyboard-dock { display: block; }
-  body.keyboard-open .wrap { padding-bottom: min(236px, 46vh); }
+  .keyboard-dock { display: none; flex: 0 0 min(218px, 48vh); height: min(218px, 48vh); overflow: hidden; background: #fff; border-top: 1px solid var(--k-border); }
+  .answer-dialog.keyboard-open .keyboard-dock { display: block; }
   .keyboard-dock .ML__keyboard { --keycap-height: 42px; --keycap-gap: 6px; --keycap-max-width: 72px; --keyboard-padding-top: 6px; height: 100%; }
 
   @media (max-width: 520px) {
@@ -106,24 +108,26 @@
 
 <dialog id="answerDialog" class="answer-dialog">
   <form method="dialog" class="dialog-body">
-    <div class="dialog-top">
-      <div>
-        <h2 class="dialog-title" id="dialogTitle">Enter answer</h2>
-        <div class="dialog-prompt" id="dialogPrompt"></div>
+    <div class="dialog-content">
+      <div class="dialog-top">
+        <div>
+          <h2 class="dialog-title" id="dialogTitle">Enter answer</h2>
+          <div class="dialog-prompt" id="dialogPrompt"></div>
+        </div>
+        <button type="button" class="ghost" id="dialogClose" aria-label="Close answer editor">Close</button>
       </div>
-      <button type="button" class="ghost" id="dialogClose" aria-label="Close answer editor">Close</button>
+      <div class="dialog-answer-line">
+        <span class="meq" id="dialogEq"></span>
+        <math-field id="dialogField" aria-label="answer editor"></math-field>
+      </div>
+      <div class="dialog-actions">
+        <button type="button" class="ghost" id="dialogClear">Clear</button>
+        <button type="submit" id="dialogUse">Use answer</button>
+      </div>
     </div>
-    <div class="dialog-answer-line">
-      <span class="meq" id="dialogEq"></span>
-      <math-field id="dialogField" aria-label="answer editor"></math-field>
-    </div>
-    <div class="dialog-actions">
-      <button type="button" class="ghost" id="dialogClear">Clear</button>
-      <button type="submit" id="dialogUse">Use answer</button>
-    </div>
+    <div id="keyboardDock" class="keyboard-dock" aria-hidden="true"></div>
   </form>
 </dialog>
-<div id="keyboardDock" class="keyboard-dock" aria-hidden="true"></div>
 
 <script type="module">
 import { convertLatexToMarkup } from 'https://cdn.jsdelivr.net/npm/mathlive@0.105.0/+esm';
@@ -156,7 +160,7 @@ function configureKeyboardDock() {
 
 function showKeyboard() {
   configureKeyboardDock();
-  document.body.classList.add('keyboard-open');
+  answerDialog.classList.add('keyboard-open');
   keyboardDock.removeAttribute('aria-hidden');
   requestAnimationFrame(() => {
     dialogField.focus();
@@ -166,7 +170,7 @@ function showKeyboard() {
 
 function hideKeyboard() {
   if (window.mathVirtualKeyboard) window.mathVirtualKeyboard.hide({ animate: false });
-  document.body.classList.remove('keyboard-open');
+  answerDialog.classList.remove('keyboard-open');
   keyboardDock.setAttribute('aria-hidden', 'true');
 }
 
