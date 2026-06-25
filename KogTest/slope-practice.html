@@ -63,7 +63,7 @@
 
   #loading { color: var(--k-text-muted); font-size: .9rem; padding: 8px 0; }
 
-  .answer-dialog { width: min(560px, calc(100vw - 24px)); max-height: calc(100vh - 24px); margin: 12px auto auto; padding: 0; border: 1px solid var(--k-border); border-radius: 10px; box-shadow: 0 12px 40px rgba(31,27,46,.22); background: #fff; color: var(--k-text); }
+  .answer-dialog { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); width: min(560px, calc(100vw - 24px)); max-height: min(360px, calc(100vh - 220px)); margin: 0; padding: 0; overflow: auto; z-index: 20; border: 1px solid var(--k-border); border-radius: 10px; box-shadow: 0 12px 40px rgba(31,27,46,.22); background: #fff; color: var(--k-text); }
   .answer-dialog::backdrop { background: rgba(31, 27, 46, .18); }
   .dialog-body { padding: 14px 16px 16px; }
   .dialog-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
@@ -154,14 +154,14 @@ function openAnswerDialog(answer) {
   dialogTitle.textContent = 'Problem ' + (answer.index + 1) + ' answer';
   dialogPrompt.innerHTML = answer.promptHTML;
   dialogField.value = answer.getValue();
-  if (!answerDialog.open) answerDialog.showModal();
+  if (!answerDialog.open) answerDialog.show();
   showKeyboard();
 }
 
 function closeAnswerDialog() {
   activeAnswer = null;
   hideKeyboard();
-  answerDialog.close();
+  if (answerDialog.open) answerDialog.close();
 }
 
 dialogClose.addEventListener('click', closeAnswerDialog);
@@ -185,6 +185,9 @@ dialogField.addEventListener('keydown', (e) => {
     if (activeAnswer) activeAnswer.setValue(dialogField.value || '');
     closeAnswerDialog();
   }
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && answerDialog.open) closeAnswerDialog();
 });
 
 // Difficulty ramp: positive whole numbers → negatives → fractions → everything.
