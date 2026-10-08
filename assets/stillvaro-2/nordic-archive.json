@@ -1,0 +1,44 @@
+{
+  "name": "Nordic Archive",
+  "source": "https://github.com/mholson/Nordic-Archive",
+  "commit": "36448bde5b5649d710bd60c0d5a2aeaa33057b73",
+  "palette": {
+    "light": {
+      "background": "#F4F6F5",
+      "background-secondary": "#E9EEEC",
+      "surface": "#DCE4E1",
+      "text": "#202A2E",
+      "text-secondary": "#3D4B50",
+      "text-muted": "#526267",
+      "separator": "#C8D2CF",
+      "cobalt": "#315F8C",
+      "link": "#2F648F",
+      "pine": "#2E6F62",
+      "definition": "#277081",
+      "focus-wash": "#B8C8CC",
+      "error": "#A13E45",
+      "copper": "#A65332",
+      "amber": "#80601A",
+      "success": "#49723F"
+    },
+    "dark": {
+      "background": "#172024",
+      "background-secondary": "#10171A",
+      "surface": "#253137",
+      "text": "#E6EBE8",
+      "text-secondary": "#C6CFCC",
+      "text-muted": "#A3AFAC",
+      "separator": "#354349",
+      "cobalt": "#7FAED3",
+      "link": "#9BC4E5",
+      "pine": "#78BDAA",
+      "definition": "#73B6C6",
+      "focus-wash": "#38515A",
+      "error": "#ED8A91",
+      "copper": "#E49A73",
+      "amber": "#D7B35A",
+      "success": "#93C58A"
+    }
+  },
+  "usage": "The Stillvaro website uses the light palette for pages and the dark palette for feature and closing sections. Transparent decoration derives from these base colors. App screenshots retain their original native pixels."
+}
