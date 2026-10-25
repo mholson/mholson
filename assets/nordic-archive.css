@@ -289,7 +289,7 @@ h1 { margin: 22px 0 25px; font-size: clamp(46px, 6vw, 76px); letter-spacing: -.0
 .prose figure { max-width: 100%; margin: 1.6em 0; }
 .prose figcaption { margin-top: 12px; color: var(--muted); font: 12px/1.65 var(--sans); }
 
-/* Stillvaro: minimal product presentation, using Nordic Archive Strategy Copper. */
+/* Stillvaro: minimal product presentation, pine green with occasional copper highlights. */
 body:has(.product-note) {
   --bg: #F4F6F5;
   --panel: #E9EEEC;
@@ -299,8 +299,10 @@ body:has(.product-note) {
   --line: #C8D2CF;
   --surface: #FAFBFA;
   --hover: #E3EAE7;
+  --pine: #2E6F62;
   --copper: #A65332;
-  --product-accent: var(--copper);
+  --product-accent: var(--pine);
+  --product-highlight: var(--copper);
   --link: var(--product-accent);
   color-scheme: light;
 }
@@ -313,7 +315,7 @@ body:has(.product-note) .nav a:hover { color: var(--product-accent); background:
 body:has(.product-note) .nav a[aria-current=page] { box-shadow: none; background: none; color: var(--ink); text-decoration: underline; text-decoration-color: var(--product-accent); text-underline-offset: 8px; }
 body:has(.product-note) a:focus-visible,
 body:has(.product-note) summary:focus-visible { outline-color: var(--product-accent); }
-body:has(.product-note) ::selection { background: #A6533226; color: var(--ink); }
+body:has(.product-note) ::selection { background: #2E6F6226; color: var(--ink); }
 .product-note { max-width: none; padding: 30px 0 60px; }
 .product-note > .back-link { display: none; }
 .product-note > .note-header { display: block; padding: 0; border: 0; }
@@ -333,6 +335,9 @@ body:has(.product-note) ::selection { background: #A6533226; color: var(--ink); 
 .product img { display: block; width: 100%; height: auto; }
 .product .product-copy, .product .product-media, .product .product-card { min-width: 0; }
 .product .product-kicker { margin: 0 0 20px; color: var(--product-accent); font: 500 11px/1.5 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+/* Orange marks the release news; everyday navigation and headings stay green. */
+.product .product-hero > .product-copy > .product-kicker,
+.product #duo > .product-split > .product-copy > .product-kicker { color: var(--product-highlight); }
 .product .product-hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; gap: 60px; padding: 60px 0 100px; }
 .product .product-hero h2 { margin: 20px 0 26px; font-size: clamp(54px, 6.3vw, 80px); line-height: 1; letter-spacing: -.065em; }
 .product .product-hero h2 em { display: block; margin-top: 8px; }
